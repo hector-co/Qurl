@@ -4,7 +4,7 @@ namespace Qurl.AspNetCore
 {
     public static class ServiceCollectionExtensions
     {
-        public static void UseQueryModels(this IServiceCollection serviceCollection)
+        public static void AddQurlModelBinder(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddMvcCore(o =>
             {
