@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.WebUtilities", "Qurl.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.WebUtilities.Tests", "Qurl.WebUtilities.Tests\Qurl.WebUtilities.Tests.csproj", "{12607D60-7542-4224-A367-ED23A49835A4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.Queryable", "Qurl.Queryable\Qurl.Queryable.csproj", "{6F157DCA-EC42-4B13-8B6F-8D3E052FF39C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{12607D60-7542-4224-A367-ED23A49835A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12607D60-7542-4224-A367-ED23A49835A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12607D60-7542-4224-A367-ED23A49835A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F157DCA-EC42-4B13-8B6F-8D3E052FF39C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F157DCA-EC42-4B13-8B6F-8D3E052FF39C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F157DCA-EC42-4B13-8B6F-8D3E052FF39C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F157DCA-EC42-4B13-8B6F-8D3E052FF39C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
