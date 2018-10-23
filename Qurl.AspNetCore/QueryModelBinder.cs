@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Qurl.WebUtilities;
+using Qurl.Abstractions;
 using System;
 using System.Threading.Tasks;
 

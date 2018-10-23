@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using Qurl.Abstractions;
 using System.Collections.Generic;
 
-namespace Qurl.WebUtilities
+namespace Qurl.Abstractions
 {
-    public static class FilterPropertyExtensions
+    internal static class FilterPropertyExtensions
     {
         internal static void SetValue<TValue>(this SingleValueFilterProperty<TValue> filterProperty, string value)
         {

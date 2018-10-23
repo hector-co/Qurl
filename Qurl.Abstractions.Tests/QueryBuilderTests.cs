@@ -1,10 +1,9 @@
 using FluentAssertions;
-using Qurl.Abstractions;
 using Qurl.Abstractions.Exceptions;
 using System;
 using Xunit;
 
-namespace Qurl.WebUtilities.Tests
+namespace Qurl.Abstractions.Tests
 {
     public class QueryBuilderTests
     {

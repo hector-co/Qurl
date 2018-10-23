@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Qurl.Abstractions\Qurl.Abstractions.csproj" />
-    <ProjectReference Include="..\Qurl.WebUtilities\Qurl.WebUtilities.csproj" />
   </ItemGroup>
 
 </Project>

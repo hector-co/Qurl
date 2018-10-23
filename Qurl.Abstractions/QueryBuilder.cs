@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using Qurl.Abstractions;
 using Qurl.Abstractions.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Qurl.WebUtilities
+namespace Qurl.Abstractions
 {
     public static class QueryBuilder
     {
