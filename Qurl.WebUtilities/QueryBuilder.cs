@@ -15,15 +15,9 @@ namespace Qurl.WebUtilities
 
         public static object FromQueryString(Type queryType, string queryString)
         {
-            if (queryType.IsGenericType)
+            if (!queryType.IsValidQueryType())
             {
-                if (queryType.GetGenericTypeDefinition() != typeof(Query<>))
-                    throw new QurlException($"{queryType.Name} is not a valid type");
-            }
-            else
-            {
-                if (!typeof(Query<>).IsAssignableFrom(queryType) && !IsSubclassOfRawGeneric(typeof(Query<>), queryType))
-                    throw new QurlException($"{queryType.Name} is not a valid type");
+                throw new QurlException($"{queryType.Name} is not a valid type");
             }
 
             var query = (dynamic)Activator.CreateInstance(queryType);
@@ -172,20 +166,6 @@ namespace Qurl.WebUtilities
                 default:
                     throw new QurlException(nameof(@operator));
             }
-        }
-
-        private static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
-        {
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    return true;
-                }
-                toCheck = toCheck.BaseType;
-            }
-            return false;
         }
     }
 }
