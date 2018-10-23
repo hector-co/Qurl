@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Qurl.AspNetCore;
 
-namespace Sample
+namespace Qurl.Samples.AspNetCore
 {
     public class Startup
     {
