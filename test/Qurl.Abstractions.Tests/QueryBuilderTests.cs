@@ -328,22 +328,25 @@ namespace Qurl.Abstractions.Tests
         }
 
         [Theory]
-        [InlineData("page", "")]
-        [InlineData("page", "pageVal")]
-        [InlineData("pageSize", "")]
-        [InlineData("pageSize", "false")]
-        [InlineData("id", "")]
-        [InlineData("id", "!0")]
-        [InlineData("id", "2,a")]
-        [InlineData("active", "!true")]
-        [InlineData("active", "5")]
-        [InlineData("active", "true,2")]
-        public void ThrowExceptionForInvalidParameterTest(string paramName, string value)
+        [InlineData("page", "page", "")]
+        [InlineData("page", "page", "pageVal")]
+        [InlineData("pageSize", "pageSize", "")]
+        [InlineData("pageSize", "pageSize", "false")]
+        [InlineData("id", "id", "")]
+        [InlineData("id[in]", "id", "a")]
+        [InlineData("id", "id", "!0")]
+        [InlineData("id", "id", "2,a")]
+        [InlineData("active", "active", "!true")]
+        [InlineData("active", "active", "5")]
+        [InlineData("active[bt]", "active", "5")]
+        [InlineData("active", "active", "true,2")]
+        [InlineData("active[eq]", "active", "true,2")]
+        public void ThrowExceptionForInvalidParameterTest(string paramName, string propName, string value)
         {
             var queryString = $"{paramName}={value}";
             Action buildQuery = () => QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
 
-            buildQuery.Should().Throw<QurlParameterFormatException>().WithMessage(paramName);
+            buildQuery.Should().Throw<QurlParameterFormatException>().WithMessage(propName);
         }
     }
 
