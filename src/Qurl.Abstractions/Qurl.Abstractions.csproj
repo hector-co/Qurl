@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1</Version>
+    <RepositoryUrl>https://github.com/hector-co/Qurl</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/hector-co/Qurl</PackageProjectUrl>
+    <Authors>Hector Carballo</Authors>
+    <Copyright>Copyright © 2018 Hector Carballo</Copyright>
+    <Company>Hco</Company>
+    <Description>QueryString (LHS)</Description>
+    <PackageTags>QueryString LHS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
