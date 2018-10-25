@@ -1,10 +1,9 @@
-﻿using Qurl.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Qurl.Queryable
+namespace Qurl.Abstractions.Queryable
 {
     internal class QueryableHelper<TModel, TFilter>
         where TModel : class
@@ -186,7 +185,7 @@ namespace Qurl.Queryable
 
     public static class QueryableExtensions
     {
-        public static IQueryable<TModel> GetQueryable<TModel, TFilter>(this Query<TFilter> query, IQueryable<TModel> source, bool applySort = true)
+        public static IQueryable<TModel> ApplyQuery<TModel, TFilter>(this IQueryable<TModel> source, Query<TFilter> query, bool applySort = true)
             where TModel : class
             where TFilter : new()
         {
@@ -195,24 +194,7 @@ namespace Qurl.Queryable
             return queryableHelper.GetQueryable(source, applySort);
         }
 
-        public static (IQueryable<TModel> source, int totalCount) GetQueryableAndTotalCount<TModel, TFilter>(
-            this Query<TFilter> query, IQueryable<TModel> source, bool applySort = true)
-            where TFilter : new()
-            where TModel : class
-        {
-            var queryableHelper = new QueryableHelper<TModel, TFilter>(query);
-
-            source = queryableHelper.GetQueryable(source, false);
-
-            var totalCount = source.Count();
-
-            if (applySort)
-                source = queryableHelper.ApplySort(source);
-
-            return (source, totalCount);
-        }
-
-        public static IQueryable<TModel> ApplySort<TModel, TFilter>(this Query<TFilter> query, IQueryable<TModel> source)
+        public static IQueryable<TModel> ApplySort<TModel, TFilter>(this IQueryable<TModel> source, Query<TFilter> query)
             where TModel : class
             where TFilter : new()
         {
