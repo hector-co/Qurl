@@ -126,7 +126,7 @@ namespace Qurl.Abstractions.Queryable
         private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(ContainsFilterProperty<TProperty> filter, string propName)
         {
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
-            var comparison = Expression.Call(property, typeof(TProperty).GetMethod("Contains"), Expression.Constant(filter.Value));
+            var comparison = Expression.Call(property, typeof(TProperty).GetMethod("Contains", new[] { typeof(TProperty) }), Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 

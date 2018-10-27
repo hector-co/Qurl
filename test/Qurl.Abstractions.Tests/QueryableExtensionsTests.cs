@@ -9,7 +9,7 @@ namespace Qurl.Abstractions.Tests
     public class QueryableExtensionsTests
     {
         private static SampleObject SampleoObject1 = new SampleObject(1, "stringVal1", true, new DateTime(2018, 1, 1));
-        private static SampleObject SampleoObject2 = new SampleObject(2, "stringval2", true, new DateTime(2018, 6, 6));
+        private static SampleObject SampleoObject2 = new SampleObject(2, "stringVal2", true, new DateTime(2018, 6, 6));
         private static SampleObject SampleoObject3 = new SampleObject(3, "newvalue1", false, new DateTime(2017, 3, 9));
         private static SampleObject SampleoObject4 = new SampleObject(4, "newvalue2", false, new DateTime(2017, 12, 11));
         private static SampleObject SampleoObject5 = new SampleObject(5, "custom", true, new DateTime(2016, 7, 7));
@@ -83,6 +83,21 @@ namespace Qurl.Abstractions.Tests
             var result = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
             result.Count().Should().Be(expectedCount);
             result.Where(r => r.Prop4 >= dateTimeFrom && r.Prop4 <= dateTimeTo).Count().Should().Be(expectedCount);
+        }
+
+        [Fact]
+        public void TestContainsFilter1()
+        {
+            const string searchValue = "stringVal";
+            const int expectedCount = 2;
+            var query = new Query<SampleObjectFilter>();
+            query.Filter.Prop2 = new ContainsFilterProperty<string>
+            {
+                Value = searchValue
+            };
+
+            var result = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
+            result.Count().Should().Be(expectedCount);
         }
 
         public class SampleObject
