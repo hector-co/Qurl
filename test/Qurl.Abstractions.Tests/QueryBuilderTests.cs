@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Qurl.Abstractions.Exceptions;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Qurl.Abstractions.Tests
@@ -348,6 +349,34 @@ namespace Qurl.Abstractions.Tests
 
             buildQuery.Should().Throw<QurlParameterFormatException>().WithMessage(propName);
         }
+
+        [Fact]
+        public void MapInPropertyFromUrlArray()
+        {
+            const string queryString = "id=1&id=2&id=3";
+            const int expectedCount = 3;
+            var expectedValues = new[] { 1, 2, 3 };
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.Id.Should().NotBeNull();
+            query.Filter.Id.GetType().Should().Be(typeof(InFilterProperty<int>));
+            ((InFilterProperty<int>)query.Filter.Id).Values.Count().Should().Be(expectedCount);
+            ((InFilterProperty<int>)query.Filter.Id).Values.Should().Contain(expectedValues);
+        }
+
+        [Fact]
+        public void MapNotInPropertyFromUrlArrayToSpecificPropertyType()
+        {
+            const string queryString = "tag=val1&tag=val2&tag=val3";
+            const int expectedCount = 3;
+            var expectedValues = new[] { "val1", "val2", "val3" };
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.Tag.Should().NotBeNull();
+            query.Filter.Tag.GetType().Should().Be(typeof(NotInFilterProperty<string>));
+            query.Filter.Tag.Values.Count().Should().Be(expectedCount);
+            query.Filter.Tag.Values.Should().Contain(expectedValues);
+        }
     }
 
     public class NonQueryType
@@ -365,6 +394,8 @@ namespace Qurl.Abstractions.Tests
         public FilterProperty<int> Id { get; set; }
         public FilterProperty<string> Name { get; set; }
         public FilterProperty<bool> Active { get; set; }
+
+        public NotInFilterProperty<string> Tag { get; set; }
     }
 
     public class TestFilterEquals : TestFilter

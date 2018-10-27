@@ -47,7 +47,7 @@ namespace Qurl.Abstractions
                 }
                 else
                 {
-                    var (propertyName, @operator) = GetPropertyNameAndOperator(kv.Key);
+                    var (propertyName, @operator) = GetPropertyNameAndOperator(kv.Key, kv.Value.Count > 1);
 
                     var propInfo = properties
                         .FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase));
@@ -106,7 +106,7 @@ namespace Qurl.Abstractions
             return result;
         }
 
-        private static (string propertyName, string @operator) GetPropertyNameAndOperator(string queryKey)
+        private static (string propertyName, string @operator) GetPropertyNameAndOperator(string queryKey, bool valueIsArray = false)
         {
             var matches = Regex.Match(queryKey, PropNameFilterTypeRegEx);
             if (matches.Success)
@@ -114,9 +114,9 @@ namespace Qurl.Abstractions
 
             matches = Regex.Match(queryKey, PropNameWithouyFilterTypeRegEx);
             if (matches.Success)
-                return (matches.Groups[1].Value, "eq");
+                return (matches.Groups[1].Value, valueIsArray ? "in" : "eq");
 
-            return (queryKey, "eq");
+            return (queryKey, valueIsArray ? "in" : "eq");
         }
 
         private static dynamic GetFilterInstance(string @operator, Type genericType, string value)
