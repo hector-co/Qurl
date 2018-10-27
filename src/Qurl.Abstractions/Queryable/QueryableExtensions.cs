@@ -38,12 +38,12 @@ namespace Qurl.Abstractions.Queryable
             }
 
             if (applySort)
-                source = ApplySort(source);
+                source = ApplySortAndPaging(source);
 
             return source;
         }
 
-        public IQueryable<TModel> ApplySort(IQueryable<TModel> source)
+        public IQueryable<TModel> ApplySortAndPaging(IQueryable<TModel> source)
         {
             var modelProperties = typeof(TModel).GetCachedProperties();
             var applyThenBy = false;
@@ -73,10 +73,10 @@ namespace Qurl.Abstractions.Queryable
                 applyThenBy = true;
             }
 
-            if (_query.Page > 0)
-                source = source.Skip((_query.Page - 1) * _query.PageSize);
-            if (_query.PageSize > 0)
-                source = source.Take(_query.PageSize);
+            if (_query.Offset > 0)
+                source = source.Skip(_query.Offset);
+            if (_query.Limit > 0)
+                source = source.Take(_query.Limit);
 
             return source;
         }
@@ -200,7 +200,7 @@ namespace Qurl.Abstractions.Queryable
         {
             var queryableHelper = new QueryableHelper<TModel, TFilter>(query);
 
-            return queryableHelper.ApplySort(source);
+            return queryableHelper.ApplySortAndPaging(source);
         }
     }
 }

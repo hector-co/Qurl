@@ -33,17 +33,17 @@ namespace Qurl.Abstractions
                     query.QueryString = kv.Value;
                 else if (kv.Key.ToLower() == "sort")
                     query.Sorts = GetSort(kv.Value);
-                else if (kv.Key.ToLower() == "page")
+                else if (kv.Key.ToLower() == "offset")
                 {
-                    if (!int.TryParse(kv.Value, out var page))
-                        throw new QurlParameterFormatException("page");
-                    query.Page = page;
+                    if (!int.TryParse(kv.Value, out var offset))
+                        throw new QurlParameterFormatException("offset");
+                    query.Offset = offset;
                 }
-                else if (kv.Key.ToLower() == "pagesize")
+                else if (kv.Key.ToLower() == "limit")
                 {
-                    if (!int.TryParse(kv.Value, out var pageSize))
-                        throw new QurlParameterFormatException("pageSize");
-                    query.PageSize = pageSize;
+                    if (!int.TryParse(kv.Value, out var limit))
+                        throw new QurlParameterFormatException("limit");
+                    query.Limit = limit;
                 }
                 else
                 {

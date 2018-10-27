@@ -44,8 +44,8 @@ namespace Qurl.Abstractions.Tests
             query.Filter.Name.Should().BeNull();
             query.Filter.Active.Should().BeNull();
 
-            query.Page.Should().Be(0);
-            query.PageSize.Should().Be(0);
+            query.Offset.Should().Be(0);
+            query.Limit.Should().Be(0);
 
             query.Sorts.Should().NotBeNull();
             query.Sorts.Count.Should().Be(1);
@@ -58,15 +58,15 @@ namespace Qurl.Abstractions.Tests
 
         [Theory]
         [InlineData("", 0, 0)]
-        [InlineData("page=4", 4, 0)]
-        [InlineData("pageSize=10", 0, 10)]
-        [InlineData("page=1&pageSize=5", 1, 5)]
-        [InlineData("page=2&pageSize=10", 2, 10)]
+        [InlineData("offset=4", 4, 0)]
+        [InlineData("limit=10", 0, 10)]
+        [InlineData("offset=1&limit=5", 1, 5)]
+        [InlineData("offset=2&limit=10", 2, 10)]
         public void MapPagingTest(string queryString, int pageExpected, int pageSizeExpected)
         {
             var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
-            query.Page.Should().Be(pageExpected);
-            query.PageSize.Should().Be(pageSizeExpected);
+            query.Offset.Should().Be(pageExpected);
+            query.Limit.Should().Be(pageSizeExpected);
         }
 
         [Theory]
@@ -328,10 +328,10 @@ namespace Qurl.Abstractions.Tests
         }
 
         [Theory]
-        [InlineData("page", "page", "")]
-        [InlineData("page", "page", "pageVal")]
-        [InlineData("pageSize", "pageSize", "")]
-        [InlineData("pageSize", "pageSize", "false")]
+        [InlineData("offset", "offset", "")]
+        [InlineData("offset", "offset", "offsetVal")]
+        [InlineData("limit", "limit", "")]
+        [InlineData("limit", "limit", "false")]
         [InlineData("id", "id", "")]
         [InlineData("id[in]", "id", "a")]
         [InlineData("id", "id", "!0")]

@@ -42,8 +42,8 @@ namespace Qurl.Abstractions
                 _sorts = value;
             }
         }
-        public int Page { get; set; }
-        public int PageSize { get; set; }
+        public int Offset { get; set; }
+        public int Limit { get; set; }
 
         internal Type GetFilterType(string name)
         {
