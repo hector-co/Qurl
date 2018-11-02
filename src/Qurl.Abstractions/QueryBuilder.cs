@@ -160,8 +160,8 @@ namespace Qurl.Abstractions
                     return typeof(InFilterProperty<>);
                 case "nin":
                     return typeof(NotInFilterProperty<>);
-                case "bt":
-                    return typeof(BetweenFilterProperty<>);
+                case "rng":
+                    return typeof(RangeFilterProperty<>);
                 default:
                     throw new QurlException(nameof(@operator));
             }

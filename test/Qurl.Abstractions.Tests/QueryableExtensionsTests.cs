@@ -74,7 +74,7 @@ namespace Qurl.Abstractions.Tests
             var dateTimeTo = new DateTime(2018, 1, 1);
             const int expectedCount = 3;
             var query = new Query<SampleObjectFilter>();
-            query.Filter.Prop4 = new BetweenFilterProperty<DateTime>
+            query.Filter.Prop4 = new RangeFilterProperty<DateTime>
             {
                 From = new Seteable<DateTime>(dateTimeFrom),
                 To = new Seteable<DateTime>(dateTimeTo)

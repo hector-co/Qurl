@@ -42,7 +42,7 @@ namespace Qurl.Abstractions
             filterProperty.Values = result;
         }
 
-        internal static void SetValue<TValue>(this BetweenFilterProperty<TValue> filterProperty, string values)
+        internal static void SetValue<TValue>(this RangeFilterProperty<TValue> filterProperty, string values)
         {
             if (string.IsNullOrEmpty(values))
                 return;

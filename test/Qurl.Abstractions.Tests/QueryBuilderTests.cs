@@ -283,22 +283,22 @@ namespace Qurl.Abstractions.Tests
             var nameFromExpected = "a";
             var nameToExpected = "x";
 
-            var queryString = $"id[bt]={idFromExpected},{idToExpected}&name[bt]={nameFromExpected},{nameToExpected}";
+            var queryString = $"id[rng]={idFromExpected},{idToExpected}&name[rng]={nameFromExpected},{nameToExpected}";
             var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
 
             query.Filter.Id.Should().NotBeNull();
-            query.Filter.Id.GetType().Should().Be(typeof(BetweenFilterProperty<int>));
-            ((BetweenFilterProperty<int>)query.Filter.Id).From.IsSet.Should().Be(true);
-            ((BetweenFilterProperty<int>)query.Filter.Id).From.Value.Should().Be(idFromExpected);
-            ((BetweenFilterProperty<int>)query.Filter.Id).To.IsSet.Should().Be(true);
-            ((BetweenFilterProperty<int>)query.Filter.Id).To.Value.Should().Be(idToExpected);
+            query.Filter.Id.GetType().Should().Be(typeof(RangeFilterProperty<int>));
+            ((RangeFilterProperty<int>)query.Filter.Id).From.IsSet.Should().Be(true);
+            ((RangeFilterProperty<int>)query.Filter.Id).From.Value.Should().Be(idFromExpected);
+            ((RangeFilterProperty<int>)query.Filter.Id).To.IsSet.Should().Be(true);
+            ((RangeFilterProperty<int>)query.Filter.Id).To.Value.Should().Be(idToExpected);
 
             query.Filter.Name.Should().NotBeNull();
-            query.Filter.Name.GetType().Should().Be(typeof(BetweenFilterProperty<string>));
-            ((BetweenFilterProperty<string>)query.Filter.Name).From.IsSet.Should().Be(true);
-            ((BetweenFilterProperty<string>)query.Filter.Name).From.Value.Should().Be(nameFromExpected);
-            ((BetweenFilterProperty<string>)query.Filter.Name).To.IsSet.Should().Be(true);
-            ((BetweenFilterProperty<string>)query.Filter.Name).To.Value.Should().Be(nameToExpected);
+            query.Filter.Name.GetType().Should().Be(typeof(RangeFilterProperty<string>));
+            ((RangeFilterProperty<string>)query.Filter.Name).From.IsSet.Should().Be(true);
+            ((RangeFilterProperty<string>)query.Filter.Name).From.Value.Should().Be(nameFromExpected);
+            ((RangeFilterProperty<string>)query.Filter.Name).To.IsSet.Should().Be(true);
+            ((RangeFilterProperty<string>)query.Filter.Name).To.Value.Should().Be(nameToExpected);
 
             query.Filter.Active.Should().BeNull();
         }
@@ -310,20 +310,20 @@ namespace Qurl.Abstractions.Tests
 
             var nameFromExpected = "a";
 
-            var queryString = $"id[bt]=,{idToExpected}&name[bt]={nameFromExpected}";
+            var queryString = $"id[rng]=,{idToExpected}&name[rng]={nameFromExpected}";
             var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
 
             query.Filter.Id.Should().NotBeNull();
-            query.Filter.Id.GetType().Should().Be(typeof(BetweenFilterProperty<int>));
-            ((BetweenFilterProperty<int>)query.Filter.Id).From.IsSet.Should().Be(false);
-            ((BetweenFilterProperty<int>)query.Filter.Id).To.IsSet.Should().Be(true);
-            ((BetweenFilterProperty<int>)query.Filter.Id).To.Value.Should().Be(idToExpected);
+            query.Filter.Id.GetType().Should().Be(typeof(RangeFilterProperty<int>));
+            ((RangeFilterProperty<int>)query.Filter.Id).From.IsSet.Should().Be(false);
+            ((RangeFilterProperty<int>)query.Filter.Id).To.IsSet.Should().Be(true);
+            ((RangeFilterProperty<int>)query.Filter.Id).To.Value.Should().Be(idToExpected);
 
             query.Filter.Name.Should().NotBeNull();
-            query.Filter.Name.GetType().Should().Be(typeof(BetweenFilterProperty<string>));
-            ((BetweenFilterProperty<string>)query.Filter.Name).From.IsSet.Should().Be(true);
-            ((BetweenFilterProperty<string>)query.Filter.Name).From.Value.Should().Be(nameFromExpected);
-            ((BetweenFilterProperty<string>)query.Filter.Name).To.IsSet.Should().Be(false);
+            query.Filter.Name.GetType().Should().Be(typeof(RangeFilterProperty<string>));
+            ((RangeFilterProperty<string>)query.Filter.Name).From.IsSet.Should().Be(true);
+            ((RangeFilterProperty<string>)query.Filter.Name).From.Value.Should().Be(nameFromExpected);
+            ((RangeFilterProperty<string>)query.Filter.Name).To.IsSet.Should().Be(false);
 
             query.Filter.Active.Should().BeNull();
         }

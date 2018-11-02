@@ -85,7 +85,7 @@ namespace Qurl.Abstractions
         }
     }
 
-    public class BetweenFilterProperty<TValue> : FilterProperty<TValue>
+    public class RangeFilterProperty<TValue> : FilterProperty<TValue>
     {
         public Seteable<TValue> From { get; set; }
         public Seteable<TValue> To { get; set; }
