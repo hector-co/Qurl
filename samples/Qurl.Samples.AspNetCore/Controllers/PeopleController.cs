@@ -26,8 +26,8 @@ namespace Qurl.Samples.AspNetCore.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery]Query<PersonFilter> query)
         {
-            var result = _context.Set<Person>().ApplyQuery(query);
-            return Ok(result.ToList());
+            var result = _context.Set<Person>().ApplyQuery(query).ToList();
+            return Ok(result);
         }
     }
 }
