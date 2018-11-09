@@ -16,7 +16,7 @@ namespace Qurl.Abstractions.Queryable
             _query = query;
         }
 
-        public IQueryable<TModel> GetQueryable(IQueryable<TModel> source, bool applySort = true)
+        public IQueryable<TModel> GetQueryable(IQueryable<TModel> source, bool applySort = true, bool selectFields = true)
         {
             var filterProperties = _query.Filter.GetType().GetCachedProperties();
 
@@ -39,6 +39,9 @@ namespace Qurl.Abstractions.Queryable
 
             if (applySort)
                 source = ApplySortAndPaging(source);
+
+            if (selectFields)
+                source = ApplySelectFields(source);
 
             return source;
         }
@@ -77,6 +80,14 @@ namespace Qurl.Abstractions.Queryable
                 source = source.Skip(_query.Offset);
             if (_query.Limit > 0)
                 source = source.Take(_query.Limit);
+
+            return source;
+        }
+
+        public IQueryable<TModel> ApplySelectFields(IQueryable<TModel> source)
+        {
+            if (_query.Fields.Any())
+                source = source.Select(GetProperties(_query.Fields));
 
             return source;
         }
@@ -180,6 +191,24 @@ namespace Qurl.Abstractions.Queryable
             }
 
             return (modelParameter, property);
+        }
+
+        private static Expression<Func<TModel, TModel>> GetProperties(IEnumerable<string> propertyNames)
+        {
+            var modelParameter = Expression.Parameter(typeof(TModel), "m");
+
+            var bindings = propertyNames.Select(propName =>
+            {
+                var propInfo = typeof(TModel).GetCachedProperties().FirstOrDefault(pr => pr.Name.Equals(propName, StringComparison.CurrentCultureIgnoreCase));
+                var sourceValue = Expression.Property(modelParameter, propInfo);
+
+                return Expression.Bind(propInfo, sourceValue);
+            }).ToList();
+
+            var newInstance = Expression.New(typeof(TModel));
+            var initializer = Expression.MemberInit(newInstance, bindings);
+
+            return Expression.Lambda<Func<TModel, TModel>>(initializer, modelParameter);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Qurl.Abstractions
                 if (Properties.TryGetValue(type, out var props))
                     return props;
             }
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var properties = type.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
             Properties.TryAdd(type, properties);
             return properties;
         }

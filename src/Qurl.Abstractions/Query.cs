@@ -19,13 +19,13 @@ namespace Qurl.Abstractions
         {
             _propsNameMappings = new Dictionary<string, string>();
             Filter = new TFilter();
-            Select = new List<string>();
+            Fields = new List<string>();
             ExtraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
             _sorts = new List<(string property, SortDirection direction)>();
         }
 
         public TFilter Filter { get; set; }
-        public List<string> Select { get; set; }
+        public List<string> Fields { get; set; }
         public Dictionary<string, (Type type, IFilterProperty filter)> ExtraFilters { get; set; }
         public string QueryString { get; set; }
         public (string property, SortDirection direction) DefaultSort { get; set; }

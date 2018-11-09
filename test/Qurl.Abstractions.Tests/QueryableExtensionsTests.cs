@@ -100,6 +100,23 @@ namespace Qurl.Abstractions.Tests
             result.Count().Should().Be(expectedCount);
         }
 
+        [Fact]
+        public void TestFieldsSelection()
+        {
+            const string fieldValue = "prop1";
+            var query = new Query<SampleObjectFilter>();
+            query.Fields.Add(fieldValue);
+
+            var results = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
+            foreach (var sampleObject in results)
+            {
+                sampleObject.Prop1.Should().NotBe(default(int));
+                sampleObject.Prop2.Should().Be(default(string));
+                sampleObject.Prop3.Should().Be(default(bool));
+                sampleObject.Prop4.Should().Be(default(DateTime));
+            }
+        }
+
         public class SampleObject
         {
             public SampleObject()
