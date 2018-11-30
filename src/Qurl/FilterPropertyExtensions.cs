@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace Qurl.Abstractions
+namespace Qurl
 {
     internal static class FilterPropertyExtensions
     {

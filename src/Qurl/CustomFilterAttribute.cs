@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Qurl.Abstractions
+namespace Qurl
 {
     public class CustomFilterAttribute : Attribute
     {

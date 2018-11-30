@@ -1,4 +1,4 @@
-﻿using Qurl.Abstractions;
+﻿using Qurl;
 using System;
 
 namespace Qurl.Samples.AspNetCore.Models

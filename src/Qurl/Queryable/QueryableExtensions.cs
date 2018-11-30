@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Qurl.Abstractions.Queryable
+namespace Qurl.Queryable
 {
     public static class QueryableExtensions
     {

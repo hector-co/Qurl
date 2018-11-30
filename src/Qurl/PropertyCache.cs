@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace Qurl.Abstractions
+namespace Qurl
 {
     public static class PropertyCache
     {

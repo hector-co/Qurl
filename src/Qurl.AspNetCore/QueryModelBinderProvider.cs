@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Qurl.Abstractions;
+using Qurl;
 
 namespace Qurl.AspNetCore
 {

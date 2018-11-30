@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
-using Qurl.Abstractions.Queryable;
+using Qurl.Queryable;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace Qurl.Abstractions.Tests
+namespace Qurl.Tests
 {
     public class QueryableExtensionsTests
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Qurl.Abstractions.Queryable
+namespace Qurl.Queryable
 {
     internal class QueryableHelper<TModel, TFilter>
             where TModel : class

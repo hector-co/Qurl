@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Qurl.Abstractions.Exceptions
+namespace Qurl.Exceptions
 {
     public class QurlException : Exception
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Qurl.Abstractions
+namespace Qurl
 {
     public enum SortDirection
     {

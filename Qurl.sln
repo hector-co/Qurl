@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA74F929-2B50-4D3B-B31C-8F06CF682226}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.Abstractions", "src\Qurl.Abstractions\Qurl.Abstractions.csproj", "{1F36FD17-A4B5-4B18-A507-D64982E1B487}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.AspNetCore", "src\Qurl.AspNetCore\Qurl.AspNetCore.csproj", "{13CBB2DD-D961-4173-B2D8-4132442FA77E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AE3C519F-7B17-4870-B73B-E153A54FA4CE}"
@@ -17,16 +15,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{4CA0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.Samples.AspNetCore", "samples\Qurl.Samples.AspNetCore\Qurl.Samples.AspNetCore.csproj", "{38DF8D5E-3E21-48B0-957D-37A30F14E779}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl", "src\Qurl\Qurl.csproj", "{1479D66F-5D28-4BF8-B562-A63D6B55B2DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1F36FD17-A4B5-4B18-A507-D64982E1B487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F36FD17-A4B5-4B18-A507-D64982E1B487}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F36FD17-A4B5-4B18-A507-D64982E1B487}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F36FD17-A4B5-4B18-A507-D64982E1B487}.Release|Any CPU.Build.0 = Release|Any CPU
 		{13CBB2DD-D961-4173-B2D8-4132442FA77E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{13CBB2DD-D961-4173-B2D8-4132442FA77E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13CBB2DD-D961-4173-B2D8-4132442FA77E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,15 +35,19 @@ Global
 		{38DF8D5E-3E21-48B0-957D-37A30F14E779}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38DF8D5E-3E21-48B0-957D-37A30F14E779}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38DF8D5E-3E21-48B0-957D-37A30F14E779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1479D66F-5D28-4BF8-B562-A63D6B55B2DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1479D66F-5D28-4BF8-B562-A63D6B55B2DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1479D66F-5D28-4BF8-B562-A63D6B55B2DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1479D66F-5D28-4BF8-B562-A63D6B55B2DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{1F36FD17-A4B5-4B18-A507-D64982E1B487} = {CA74F929-2B50-4D3B-B31C-8F06CF682226}
 		{13CBB2DD-D961-4173-B2D8-4132442FA77E} = {CA74F929-2B50-4D3B-B31C-8F06CF682226}
 		{051A6CF4-2DD7-45B8-A123-C35D05CA73A4} = {AE3C519F-7B17-4870-B73B-E153A54FA4CE}
 		{38DF8D5E-3E21-48B0-957D-37A30F14E779} = {4CA0291D-5CF9-4E8D-8BE7-9BC248A9F763}
+		{1479D66F-5D28-4BF8-B562-A63D6B55B2DE} = {CA74F929-2B50-4D3B-B31C-8F06CF682226}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D8E5306-9005-4343-B536-75CB72062A98}

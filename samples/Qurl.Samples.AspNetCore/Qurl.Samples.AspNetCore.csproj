@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Qurl.Abstractions\Qurl.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Qurl.AspNetCore\Qurl.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Qurl\Qurl.csproj" />
   </ItemGroup>
 
 </Project>

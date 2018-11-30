@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Qurl.Abstractions;
-using Qurl.Abstractions.Queryable;
+using Qurl.Queryable;
 using Qurl.Samples.AspNetCore.Models;
 using System.Linq;
 
