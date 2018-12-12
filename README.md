@@ -6,7 +6,7 @@ Allows creating filter objects based on URL queries.
 
 Install with nuget
 
-    Install-Package Qurl.Abstractions
+    Install-Package Qurl
     
 
 ### Asp .Net Core extension
