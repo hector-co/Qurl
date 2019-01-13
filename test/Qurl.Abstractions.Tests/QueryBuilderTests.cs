@@ -377,6 +377,19 @@ namespace Qurl.Tests
             query.Filter.Tag.Values.Count().Should().Be(expectedCount);
             query.Filter.Tag.Values.Should().Contain(expectedValues);
         }
+
+        [Fact]
+        public void MapToInheritedObjectProperties()
+        {
+            const string queryString = "id=1&name=testname&active=true&tag=val1&tag=val2&tag=val3";
+            var query = (Query<TestFilterChild>)QueryBuilder.FromQueryString(typeof(Query<TestFilterChild>), queryString);
+
+            query.Filter.Id.Should().NotBeNull();
+            ((EqualsFilterProperty<int>)query.Filter.Id).Value.Should().Be(1);
+            query.Filter.Name.Should().NotBeNull();
+            ((EqualsFilterProperty<string>)query.Filter.Name).Value.Should().Be("testname");
+            query.Filter.Tag.GetType().Should().Be(typeof(NotInFilterProperty<string>));
+        }
     }
 
     public class NonQueryType
@@ -404,6 +417,11 @@ namespace Qurl.Tests
     }
 
     public class DerivedQueryType : Query<TestFilter>
+    {
+
+    }
+
+    public class TestFilterChild : TestFilter
     {
 
     }
