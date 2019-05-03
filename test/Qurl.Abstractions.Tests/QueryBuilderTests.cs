@@ -390,6 +390,20 @@ namespace Qurl.Tests
             ((EqualsFilterProperty<string>)query.Filter.Name).Value.Should().Be("testname");
             query.Filter.Tag.GetType().Should().Be(typeof(NotInFilterProperty<string>));
         }
+
+        [Fact]
+        public void MapInPropertyWithQuotes()
+        {
+            const string queryString = @"name[in]=""val1.1,val1.2"",val2, , val3 ,,val4";
+            const int expectedCount = 6;
+            var expectedValues = new[] { @"""val1.1,val1.2""", "val2", " ", " val3 ", "",  "val4" };
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.Name.Should().NotBeNull();
+            query.Filter.Name.GetType().Should().Be(typeof(InFilterProperty<string>));
+            ((InFilterProperty<string>)query.Filter.Name).Values.Count().Should().Be(expectedCount);
+            ((InFilterProperty<string>)query.Filter.Name).Values.Should().Contain(expectedValues);
+        }
     }
 
     public class NonQueryType
