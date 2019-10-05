@@ -27,13 +27,18 @@ namespace Qurl.Queryable
 
                 var customFilterAttr = (CustomFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(CustomFilterAttribute));
 
-                if (customFilterAttr != null && string.IsNullOrEmpty(customFilterAttr.PropertyPath))
+                if (customFilterAttr != null && string.IsNullOrEmpty(customFilterAttr.MappedName))
                     continue;
 
                 var filterProperty = (dynamic)filterProp.GetValue(_query.Filter);
                 if (filterProperty == null) continue;
-                var propName = customFilterAttr == null ? _query.GetPropertyMappedName(filterProp.Name) : customFilterAttr.PropertyPath;
-                Expression<Func<TModel, bool>> predicate = GetPredicate(filterProperty, propName);
+
+                var propertyNameMapping = customFilterAttr != null
+                    ? new QueryNameMapping(filterProp.Name, customFilterAttr.MappedName, customFilterAttr.NullValueMappedName)
+                    : _query.GetPropertyMappedName(filterProp.Name);
+
+                //var propName = propertyNameMapping.GetName(filterProperty.Value == null);
+                Expression<Func<TModel, bool>> predicate = GetPredicate(filterProperty, propertyNameMapping);
                 source = source.Where(predicate);
             }
 
@@ -56,7 +61,7 @@ namespace Qurl.Queryable
                 var sortPoperty = modelProperties.FirstOrDefault(p => p.Name.Equals(property, StringComparison.CurrentCultureIgnoreCase));
                 if (sortPoperty == null) continue;
                 var propName = _query.GetPropertyMappedName(sortPoperty.Name);
-                Expression<Func<TModel, object>> predicate = GetSortExpression(propName);
+                Expression<Func<TModel, object>> predicate = GetSortExpression(propName.PropertyName);
 
                 if (direction == SortDirection.Ascending)
                 {
@@ -92,71 +97,81 @@ namespace Qurl.Queryable
             return source;
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(EqualsFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(EqualsFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.Equal(property, Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(NotEqualsFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(NotEqualsFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.NotEqual(property, Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(LessThanFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(LessThanFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.LessThan(property, Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(LessThanOrEqualFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(LessThanOrEqualFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.LessThanOrEqual(property, Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(GreaterThanFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(GreaterThanFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.GreaterThan(property, Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(GreaterThanOrEqualFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(GreaterThanOrEqualFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.GreaterThanOrEqual(property, Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(ContainsFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(ContainsFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Value == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.Call(property, typeof(TProperty).GetMethod("Contains", new[] { typeof(TProperty) }), Expression.Constant(filter.Value));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(InFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(InFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Values == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.Call(Expression.Constant(filter.Values), typeof(List<TProperty>).GetMethod("Contains"), property);
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(NotInFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(NotInFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName(filter.Values == null);
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             var comparison = Expression.Not(Expression.Call(Expression.Constant(filter.Values), typeof(List<TProperty>).GetMethod("Contains"), property));
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(RangeFilterProperty<TProperty> filter, string propName)
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(RangeFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
+            var propName = nameMapping.GetName();
             var (modelParameter, property) = GetModelParamaterAndProperty(propName);
             if (!filter.From.IsSet && !filter.To.IsSet)
                 return Expression.Lambda<Func<TModel, bool>>(Expression.Constant(true), modelParameter);

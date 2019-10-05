@@ -4,11 +4,7 @@ namespace Qurl
 {
     public class CustomFilterAttribute : Attribute
     {
-        public string PropertyPath { get; set; }
-
-        public CustomFilterAttribute(string propertyPath = "")
-        {
-            PropertyPath = propertyPath;
-        }
+        public string MappedName { get; set; }
+        public string NullValueMappedName { get; set; }
     }
 }

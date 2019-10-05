@@ -17,7 +17,7 @@ namespace Qurl.Samples.AspNetCore.Models
         public FilterProperty<int> Id { get; set; }
         public FilterProperty<string> Name { get; set; }
         public RangeFilterProperty<DateTime> Birthday { get; set; }
-        [CustomFilter("Group.Id")]
+        [CustomFilter(MappedName = "Group.Id")]
         public FilterProperty<int> GroupId { get; set; }
         public EqualsFilterProperty<bool> Active { get; set; }
     }

@@ -14,9 +14,17 @@ namespace Qurl.Tests
         private static SampleObject SampleoObject4 = new SampleObject(4, "newvalue2", false, new DateTime(2017, 12, 11));
         private static SampleObject SampleoObject5 = new SampleObject(5, "custom", true, new DateTime(2016, 7, 7));
 
+        private static SampleObjectWithRelationship SampleObjectWithRelationship1 = new SampleObjectWithRelationship { Prop1 = SampleoObject1 };
+        private static SampleObjectWithRelationship SampleObjectWithRelationship2 = new SampleObjectWithRelationship { Prop1 = null };
+
         private static SampleObject[] SampleOjectsCollection = new[]
         {
             SampleoObject1, SampleoObject2, SampleoObject3, SampleoObject4, SampleoObject5
+        };
+
+        private static SampleObjectWithRelationship[] SampleObjectWithRelationshipsCollection = new[]
+        {
+            SampleObjectWithRelationship1, SampleObjectWithRelationship2
         };
 
         [Fact]
@@ -110,11 +118,44 @@ namespace Qurl.Tests
             var results = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
             foreach (var sampleObject in results)
             {
-                sampleObject.Prop1.Should().NotBe(default(int));
-                sampleObject.Prop2.Should().Be(default(string));
-                sampleObject.Prop3.Should().Be(default(bool));
-                sampleObject.Prop4.Should().Be(default(DateTime));
+                sampleObject.Prop1.Should().NotBe(default);
+                sampleObject.Prop2.Should().Be(default);
+                sampleObject.Prop3.Should().Be(default);
+                sampleObject.Prop4.Should().Be(default);
             }
+        }
+
+        [Fact]
+        public void FallbackForNullValues()
+        {
+            int? prop1FilterValue = null;
+            const int expectedCount = 1;
+            var query = new Query<SampleObjectWithRelationshipFilter>();
+            query.Filter.Prop1 = new EqualsFilterProperty<int?>
+            {
+                Value = prop1FilterValue
+            };
+
+            query.SetPropertyNameMapping("Prop1", "Prop1.Prop1", "Prop1");
+            var result = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query);
+            result.Count().Should().Be(expectedCount);
+            result.FirstOrDefault().Prop1.Should().Be(prop1FilterValue);
+        }
+
+        [Fact]
+        public void FallbackForNullValuesCustomFilter()
+        {
+            int? prop1FilterValue = null;
+            const int expectedCount = 1;
+            var query = new Query<SampleObjectWithRelationshipFilter>();
+            query.Filter.Prop1 = new EqualsFilterProperty<int?>
+            {
+                Value = prop1FilterValue
+            };
+
+            var result = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query);
+            result.Count().Should().Be(expectedCount);
+            result.FirstOrDefault().Prop1.Should().Be(prop1FilterValue);
         }
 
         public class SampleObject
@@ -137,12 +178,25 @@ namespace Qurl.Tests
             public DateTime Prop4 { get; set; }
         }
 
+        public class SampleObjectWithRelationship
+        {
+            public SampleObject Prop1 { get; set; }
+        }
+
         public class SampleObjectFilter
         {
             public FilterProperty<int> Prop1 { get; set; }
             public FilterProperty<string> Prop2 { get; set; }
             public FilterProperty<bool> Prop3 { get; set; }
             public FilterProperty<DateTime> Prop4 { get; set; }
+        }
+
+        public class SampleObjectWithRelationshipFilter
+        {
+            public FilterProperty<int?> Prop1 { get; set; }
+
+            [CustomFilter(NullValueMappedName = "Prop1")]
+            public FilterProperty<int?> Prop1_2 { get; set; }
         }
     }
 }

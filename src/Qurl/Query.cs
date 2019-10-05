@@ -9,15 +9,39 @@ namespace Qurl
         Ascending, Descending
     }
 
+    public struct QueryNameMapping
+    {
+        public QueryNameMapping(string propertyName, string mappedName = "", string nullValueNameFallback = "")
+        {
+            PropertyName = propertyName;
+            MappedName = mappedName;
+            NullValueMappedName = nullValueNameFallback;
+        }
+
+        public string PropertyName { get; set; }
+        public string MappedName { get; set; }
+        public string NullValueMappedName { get; set; }
+
+        public string GetName(bool tryApplyNullFallback = false)
+        {
+            if (tryApplyNullFallback && !string.IsNullOrEmpty(NullValueMappedName))
+                return NullValueMappedName;
+            if (!string.IsNullOrEmpty(MappedName))
+                return MappedName;
+            return PropertyName;
+        }
+    }
+
+
     public class Query<TFilter>
         where TFilter : new()
     {
-        private readonly Dictionary<string, string> _propsNameMappings;
+        private readonly Dictionary<string, QueryNameMapping> _propsNameMappings;
         private List<(string property, SortDirection direction)> _sorts;
 
         public Query()
         {
-            _propsNameMappings = new Dictionary<string, string>();
+            _propsNameMappings = new Dictionary<string, QueryNameMapping>();
             Filter = new TFilter();
             Fields = new List<string>();
             ExtraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
@@ -59,15 +83,17 @@ namespace Qurl
             ExtraFilters.Add(name, (typeof(TType), null));
         }
 
-        public void SetPropertyNameMapping(string propertyName, string propertyMappedName)
+        public void SetPropertyNameMapping(string propertyName, string propertyMappedName, string propertyNullValueMappedName = "")
         {
-            if (_propsNameMappings.ContainsKey(propertyName)) return;
-            _propsNameMappings.Add(propertyName, propertyMappedName);
+            if (_propsNameMappings.ContainsKey(propertyName))
+                _propsNameMappings[propertyName] = new QueryNameMapping(propertyName, propertyMappedName, propertyNullValueMappedName);
+            else
+                _propsNameMappings.Add(propertyName, new QueryNameMapping(propertyName, propertyMappedName, propertyNullValueMappedName));
         }
 
-        public string GetPropertyMappedName(string propertyName)
+        public QueryNameMapping GetPropertyMappedName(string propertyName)
         {
-            if (!_propsNameMappings.ContainsKey(propertyName)) return propertyName;
+            if (!_propsNameMappings.ContainsKey(propertyName)) return new QueryNameMapping(propertyName);
             return _propsNameMappings[propertyName];
         }
 
