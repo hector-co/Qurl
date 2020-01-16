@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Qurl.Exceptions
 {
-    public class QurlParameterFormatException : Exception
+    public class QurlParameterFormatException : QurlException
     {
         public QurlParameterFormatException()
         {
