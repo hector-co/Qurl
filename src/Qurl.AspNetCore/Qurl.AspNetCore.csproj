@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <RepositoryUrl>https://github.com/hector-co/Qurl</RepositoryUrl>
     <PackageProjectUrl>https://github.com/hector-co/Qurl</PackageProjectUrl>
     <Authors>Hector Carballo</Authors>
@@ -11,9 +11,9 @@
     <Company>Hco</Company>
     <Description>Qurl AspNetCore model binder</Description>
     <PackageTags>QueryString LHS</PackageTags>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/hector-co/Qurl/master/LICENSE</PackageLicenseUrl>
-    <AssemblyVersion>0.2.2.0</AssemblyVersion>
-    <FileVersion>0.2.2.0</FileVersion>
+    <AssemblyVersion>0.2.3.0</AssemblyVersion>
+    <FileVersion>0.2.3.0</FileVersion>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +22,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Qurl\Qurl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
