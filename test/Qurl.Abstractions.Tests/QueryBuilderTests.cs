@@ -57,6 +57,28 @@ namespace Qurl.Tests
             query.ExtraFilters.Count.Should().Be(0);
         }
 
+        [Fact]
+        public void BuildFromEmptyQueryStringUsingGenericsTest()
+        {
+            var query = QueryBuilder.FromQueryString<Query<TestFilter>>("");
+
+            query.Filter.Should().NotBeNull();
+            query.Filter.Id.Should().BeNull();
+            query.Filter.Name.Should().BeNull();
+            query.Filter.Active.Should().BeNull();
+
+            query.Offset.Should().Be(0);
+            query.Limit.Should().Be(0);
+
+            query.Sorts.Should().NotBeNull();
+            query.Sorts.Count.Should().Be(1);
+            query.Sorts[0].property.Should().BeNull();
+            query.Sorts[0].direction.Should().Be(SortDirection.Ascending);
+
+            query.ExtraFilters.Should().NotBeNull();
+            query.ExtraFilters.Count.Should().Be(0);
+        }
+
         [Theory]
         [InlineData("", 0, 0)]
         [InlineData("offset=4", 4, 0)]
@@ -396,7 +418,7 @@ namespace Qurl.Tests
         {
             const string queryString = @"name[in]=""val1.1,val1.2"",val2, , val3 ,,val4";
             const int expectedCount = 6;
-            var expectedValues = new[] { @"""val1.1,val1.2""", "val2", " ", " val3 ", "",  "val4" };
+            var expectedValues = new[] { @"""val1.1,val1.2""", "val2", " ", " val3 ", "", "val4" };
             var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
 
             query.Filter.Name.Should().NotBeNull();

@@ -59,6 +59,11 @@ namespace Qurl
             return query;
         }
 
+        public static TQuery FromQueryString<TQuery>(string queryString)
+        {
+            return (TQuery)FromQueryString(typeof(TQuery), queryString);
+        }
+
         private static void SetQueryValue<TFilter>(Query<TFilter> query, string key, StringValues values)
             where TFilter : new()
         {
