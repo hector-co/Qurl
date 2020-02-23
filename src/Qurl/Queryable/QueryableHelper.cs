@@ -37,7 +37,6 @@ namespace Qurl.Queryable
                     ? new QueryNameMapping(filterProp.Name, customFilterAttr.MappedName, customFilterAttr.NullValueMappedName)
                     : _query.GetPropertyMappedName(filterProp.Name);
 
-                //var propName = propertyNameMapping.GetName(filterProperty.Value == null);
                 Expression<Func<TModel, bool>> predicate = GetPredicate(filterProperty, propertyNameMapping);
                 source = source.Where(predicate);
             }

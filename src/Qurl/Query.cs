@@ -37,7 +37,6 @@ namespace Qurl
         where TFilter : new()
     {
         private readonly Dictionary<string, QueryNameMapping> _propsNameMappings;
-        private List<(string property, SortDirection direction)> _sorts;
 
         public Query()
         {
@@ -45,7 +44,7 @@ namespace Qurl
             Filter = new TFilter();
             Fields = new List<string>();
             ExtraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
-            _sorts = new List<(string property, SortDirection direction)>();
+            Sorts = new List<(string property, SortDirection direction)>();
         }
 
         public TFilter Filter { get; set; }
@@ -53,19 +52,7 @@ namespace Qurl
         public Dictionary<string, (Type type, IFilterProperty filter)> ExtraFilters { get; set; }
         public string QueryString { get; set; }
         public (string property, SortDirection direction) DefaultSort { get; set; }
-        public List<(string property, SortDirection direction)> Sorts
-        {
-            get
-            {
-                if (!_sorts.Any())
-                    return new List<(string property, SortDirection direction)> { DefaultSort };
-                return _sorts;
-            }
-            set
-            {
-                _sorts = value;
-            }
-        }
+        public List<(string property, SortDirection direction)> Sorts { get; set; }
         public int Offset { get; set; }
         public int Limit { get; set; }
 

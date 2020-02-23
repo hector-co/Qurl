@@ -22,7 +22,8 @@ namespace Qurl.Tests
         [Fact]
         public void BuildFromQueryTypeTest()
         {
-            var query = QueryBuilder.FromQueryString(typeof(Query<TestFilter>), "");
+            //var query = QueryBuilder.FromQueryString(typeof(Query<TestFilter>), "");
+            var query = QueryBuilder.FromQueryString<Query<TestFilter>>("");
             query.Should().NotBeNull();
             query.GetType().Should().Be(typeof(Query<TestFilter>));
         }
@@ -49,9 +50,7 @@ namespace Qurl.Tests
             query.Limit.Should().Be(0);
 
             query.Sorts.Should().NotBeNull();
-            query.Sorts.Count.Should().Be(1);
-            query.Sorts[0].property.Should().BeNull();
-            query.Sorts[0].direction.Should().Be(SortDirection.Ascending);
+            query.Sorts.Count.Should().Be(0);
 
             query.ExtraFilters.Should().NotBeNull();
             query.ExtraFilters.Count.Should().Be(0);
@@ -71,9 +70,7 @@ namespace Qurl.Tests
             query.Limit.Should().Be(0);
 
             query.Sorts.Should().NotBeNull();
-            query.Sorts.Count.Should().Be(1);
-            query.Sorts[0].property.Should().BeNull();
-            query.Sorts[0].direction.Should().Be(SortDirection.Ascending);
+            query.Sorts.Count.Should().Be(0);
 
             query.ExtraFilters.Should().NotBeNull();
             query.ExtraFilters.Count.Should().Be(0);
