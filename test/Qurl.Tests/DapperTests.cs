@@ -21,7 +21,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -77,7 +77,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -98,7 +98,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -119,7 +119,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -140,7 +140,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -161,7 +161,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -182,7 +182,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
@@ -203,7 +203,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().BeEquivalentTo(prop1FilterValues);
@@ -224,7 +224,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterName);
             queryParts.Parameters[expectedParamterName].Should().BeEquivalentTo(prop1FilterValues);
@@ -248,7 +248,7 @@ namespace Qurl.Tests
 
             var queryParts = query.GetQueryParts("SampleObject");
 
-            queryParts.Filter.Should().Be(expectedFilter);
+            queryParts.Filters.Should().Be(expectedFilter);
             queryParts.Parameters.Should().NotBeEmpty();
             queryParts.Parameters.Should().ContainKey(expectedParamterFromName);
             queryParts.Parameters[expectedParamterFromName].Should().Be(prop1FilterFromValue);

@@ -13,9 +13,10 @@ namespace Qurl.Dapper
             return filters + " AND " + newFilter;
         }
 
-        public static QueryParts GetQueryParts<TFilter>(this Query<TFilter> query, string tableName, string tableAlias = "", string tableSchema = "")
+        public static QueryParts GetQueryParts<TFilter>(this Query<TFilter> query, string tableName, string tableAlias = "", string tableSchema = "", Dictionary<string, string> paramAliases = null)
             where TFilter : new()
         {
+            if (paramAliases == null) paramAliases = new Dictionary<string, string>();
             var tableNameOrAlias = string.IsNullOrEmpty(tableAlias) ? tableName : tableAlias;
 
             var queryFilters = "";
@@ -29,6 +30,9 @@ namespace Qurl.Dapper
 
                 var customFilterAttr = (CustomFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(CustomFilterAttribute));
 
+                if (customFilterAttr != null && string.IsNullOrEmpty(customFilterAttr.MappedName))
+                    continue;
+
                 var filterProperty = (dynamic)filterProp.GetValue(query.Filter);
                 if (filterProperty == null) continue;
 
@@ -36,7 +40,9 @@ namespace Qurl.Dapper
                     ? new QueryNameMapping(filterProp.Name, customFilterAttr.MappedName, customFilterAttr.NullValueMappedName)
                     : query.GetPropertyMappedName(filterProp.Name);
 
-                if (TryGetSqlFilter(filterProperty, propertyNameMapping.GetName(), out (string queryFilter, Dictionary<string, object> parameters) result, tableAlias))
+                var calcTableAlias = paramAliases.ContainsKey(propertyNameMapping.GetName()) ? paramAliases[propertyNameMapping.GetName()] : tableAlias;
+
+                if (TryGetSqlFilter(filterProperty, propertyNameMapping.GetName(), out (string queryFilter, Dictionary<string, object> parameters) result, calcTableAlias))
                 {
                     queryFilters = AddFilter(queryFilters, result.queryFilter);
                     parameters = parameters.Concat(result.parameters).ToDictionary(p => p.Key, p => p.Value);
@@ -51,7 +57,7 @@ namespace Qurl.Dapper
                 Fields = $"{completeTableName}.*",
                 TableName = completeTableName,
                 TableAlias = string.IsNullOrEmpty(tableAlias) ? "" : $"[{tableAlias}]",
-                Filter = queryFilters,
+                Filters = queryFilters,
                 Parameters = parameters,
                 Sort = sortAndPaging.sort,
                 Paging = sortAndPaging.paging

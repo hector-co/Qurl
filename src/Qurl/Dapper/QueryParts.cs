@@ -3,12 +3,12 @@ using System.Text;
 
 namespace Qurl.Dapper
 {
-    public struct QueryParts
+    public class QueryParts
     {
         public string Fields { get; set; }
         public string TableName { get; set; }
         public string TableAlias { get; set; }
-        public string Filter { get; set; }
+        public string Filters { get; set; }
         public Dictionary<string, object> Parameters { get; set; }
         public string Sort { get; set; }
         public string Paging { get; set; }
@@ -18,19 +18,30 @@ namespace Qurl.Dapper
             var sb = new StringBuilder();
             sb.AppendLine($"SELECT {Fields}");
             sb.AppendLine($"FROM {TableName} {(string.IsNullOrEmpty(TableAlias) ? "" : TableAlias)}");
-            if (!string.IsNullOrEmpty(Filter))
+            var orderBy = includeSortAndPaging ? GetOrderByString() : "";
+            if (!string.IsNullOrEmpty(Filters))
             {
-                sb.AppendLine($"WHERE {Filter}");
+                sb.AppendLine($"WHERE {Filters}");
             }
-            if (!string.IsNullOrEmpty(Sort) && includeSortAndPaging)
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sb.AppendLine(orderBy);
+            }
+            return sb.ToString();
+        }
+
+        public string GetOrderByString()
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrEmpty(Sort))
             {
                 sb.AppendLine($"ORDER BY {Sort}");
             }
-            if (!string.IsNullOrEmpty(Paging) && includeSortAndPaging)
+            if (!string.IsNullOrEmpty(Paging))
             {
                 sb.AppendLine(Paging);
             }
-            return sb.ToString(); ;
+            return sb.ToString();
         }
     }
 }
