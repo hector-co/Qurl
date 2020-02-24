@@ -1,5 +1,4 @@
-﻿using Qurl.Attributes;
-using System;
+﻿using System;
 
 namespace Qurl.Tests
 {

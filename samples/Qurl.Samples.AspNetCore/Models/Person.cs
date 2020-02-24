@@ -1,5 +1,4 @@
 ﻿using Qurl;
-using Qurl.Attributes;
 using System;
 
 namespace Qurl.Samples.AspNetCore.Models

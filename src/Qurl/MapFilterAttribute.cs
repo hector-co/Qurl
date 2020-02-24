@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Qurl.Attributes
+namespace Qurl
 {
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class MapFilterAttribute : Attribute
