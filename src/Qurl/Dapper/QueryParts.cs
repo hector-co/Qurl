@@ -30,6 +30,23 @@ namespace Qurl.Dapper
             return sb.ToString();
         }
 
+        public string GetCountSqlQuery(bool includeSortAndPaging = true)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"SELECT COUNT(*)");
+            sb.AppendLine($"FROM {TableName} {(string.IsNullOrEmpty(TableAlias) ? "" : TableAlias)}");
+            var orderBy = includeSortAndPaging ? GetOrderByString() : "";
+            if (!string.IsNullOrEmpty(Filters))
+            {
+                sb.AppendLine($"WHERE {Filters}");
+            }
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sb.AppendLine(orderBy);
+            }
+            return sb.ToString();
+        }
+
         public string GetOrderByString()
         {
             var sb = new StringBuilder();
