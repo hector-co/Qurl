@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Qurl.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -26,16 +27,19 @@ namespace Qurl.Queryable
                     continue;
 
                 var customFilterAttr = (CustomFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(CustomFilterAttribute));
+                if (customFilterAttr != null)
+                    continue;
 
-                if (customFilterAttr != null && string.IsNullOrEmpty(customFilterAttr.MappedName))
+                var mapFilterAttr = (MapFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(MapFilterAttribute));
+                if (mapFilterAttr != null && string.IsNullOrEmpty(mapFilterAttr.MappedName))
                     continue;
 
                 var filterProperty = (dynamic)filterProp.GetValue(_query.Filter);
                 if (filterProperty == null) continue;
 
-                var propertyNameMapping = customFilterAttr != null
-                    ? new QueryNameMapping(filterProp.Name, customFilterAttr.MappedName, customFilterAttr.NullValueMappedName)
-                    : _query.GetPropertyMappedName(filterProp.Name);
+                var propertyNameMapping = _query.PropertyNameHasMapping(filterProp.Name) || mapFilterAttr == null
+                    ? _query.GetPropertyMappedName(filterProp.Name)
+                    : new QueryNameMapping(filterProp.Name, mapFilterAttr.MappedName, mapFilterAttr.NullValueMappedName);
 
                 Expression<Func<TModel, bool>> predicate = GetPredicate(filterProperty, propertyNameMapping);
                 source = source.Where(predicate);

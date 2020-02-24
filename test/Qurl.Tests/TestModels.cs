@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Qurl.Attributes;
+using System;
 
 namespace Qurl.Tests
 {
@@ -39,7 +40,7 @@ namespace Qurl.Tests
     {
         public FilterProperty<int?> Prop1 { get; set; }
 
-        [CustomFilter(NullValueMappedName = "Prop1")]
+        [CustomFilter, MapFilter(NullValueMappedName = "Prop1")]
         public FilterProperty<int?> Prop1_2 { get; set; }
     }
 

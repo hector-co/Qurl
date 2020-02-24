@@ -84,6 +84,11 @@ namespace Qurl
             return _propsNameMappings[propertyName];
         }
 
+        public bool PropertyNameHasMapping(string propertyName)
+        {
+            return _propsNameMappings.ContainsKey(propertyName);
+        }
+
         internal void SetExtraFilterValue(string name, IFilterProperty filterProperty)
         {
             if (!ExtraFilters.ContainsKey(name))

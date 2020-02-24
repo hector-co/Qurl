@@ -1,4 +1,5 @@
 ﻿using Qurl;
+using Qurl.Attributes;
 using System;
 
 namespace Qurl.Samples.AspNetCore.Models
@@ -17,7 +18,7 @@ namespace Qurl.Samples.AspNetCore.Models
         public FilterProperty<int> Id { get; set; }
         public FilterProperty<string> Name { get; set; }
         public RangeFilterProperty<DateTime> Birthday { get; set; }
-        [CustomFilter(MappedName = "Group.Id")]
+        [CustomFilter, MapFilter(MappedName = "Group.Id")]
         public FilterProperty<int> GroupId { get; set; }
         public EqualsFilterProperty<bool> Active { get; set; }
     }

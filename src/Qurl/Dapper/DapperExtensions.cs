@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Qurl.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,16 +30,19 @@ namespace Qurl.Dapper
                     continue;
 
                 var customFilterAttr = (CustomFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(CustomFilterAttribute));
+                if (customFilterAttr != null)
+                    continue;
 
-                if (customFilterAttr != null && string.IsNullOrEmpty(customFilterAttr.MappedName))
+                var mapFilterAttr = (MapFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(MapFilterAttribute));
+                if (mapFilterAttr != null && string.IsNullOrEmpty(mapFilterAttr.MappedName))
                     continue;
 
                 var filterProperty = (dynamic)filterProp.GetValue(query.Filter);
                 if (filterProperty == null) continue;
 
-                var propertyNameMapping = customFilterAttr != null
-                    ? new QueryNameMapping(filterProp.Name, customFilterAttr.MappedName, customFilterAttr.NullValueMappedName)
-                    : query.GetPropertyMappedName(filterProp.Name);
+                var propertyNameMapping = query.PropertyNameHasMapping(filterProp.Name) || mapFilterAttr == null
+                    ? query.GetPropertyMappedName(filterProp.Name)
+                    : new QueryNameMapping(filterProp.Name, mapFilterAttr.MappedName, mapFilterAttr.NullValueMappedName);
 
                 var calcTableAlias = paramAliases.ContainsKey(propertyNameMapping.GetName()) ? paramAliases[propertyNameMapping.GetName()] : tableAlias;
 

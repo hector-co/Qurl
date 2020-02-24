@@ -1,8 +1,9 @@
 ﻿using System;
 
-namespace Qurl
+namespace Qurl.Attributes
 {
-    public class CustomFilterAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class MapFilterAttribute : Attribute
     {
         public string MappedName { get; set; }
         public string NullValueMappedName { get; set; }
