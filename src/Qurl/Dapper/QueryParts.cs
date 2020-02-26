@@ -30,7 +30,7 @@ namespace Qurl.Dapper
             return sb.ToString();
         }
 
-        public string GetCountSqlQuery(bool includeSortAndPaging = true)
+        public string GetSqlCountQuery(bool includeSortAndPaging = true)
         {
             var sb = new StringBuilder();
             sb.AppendLine($"SELECT COUNT(*)");
