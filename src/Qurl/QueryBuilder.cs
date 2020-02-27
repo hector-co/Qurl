@@ -8,10 +8,16 @@ using System.Text.RegularExpressions;
 
 namespace Qurl
 {
+    public enum FilterMode
+    {
+        LHS,
+        RHS
+    }
+
     public static class QueryBuilder
     {
-        const string PropNameFilterTypeRegEx = @"(?:filter\.)?\.?(.*)?\[(.*)?\]";
-        const string PropNameWithouyFilterTypeRegEx = @"(?:filter\.)?\.?(.*)";
+        const string PropNameFilterTypeRegEx = @"(?i:filter\.)?\.?(.*)?\[(.*)?\]";
+        const string PropNameWithouyFilterTypeRegEx = @"(?i:filter\.)?\.?(.*)";
 
         const string EqualsOperation = "EQ";
         const string NotEqualsOperation = "NEQ";
@@ -40,7 +46,7 @@ namespace Qurl
             LimitProperty
         }
 
-        public static object FromQueryString(Type queryType, string queryString)
+        public static object FromQueryString(Type queryType, string queryString, FilterMode mode = FilterMode.LHS)
         {
             if (!queryType.IsValidQueryType())
             {
@@ -53,25 +59,25 @@ namespace Qurl
 
             foreach (var kv in queryDictionary)
             {
-                SetQueryValue(query, kv.Key, kv.Value);
+                SetQueryValue(query, kv.Key, kv.Value, mode);
             }
 
             return query;
         }
 
-        public static TQuery FromQueryString<TQuery>(string queryString)
+        public static TQuery FromQueryString<TQuery>(string queryString, FilterMode mode = FilterMode.LHS)
         {
-            return (TQuery)FromQueryString(typeof(TQuery), queryString);
+            return (TQuery)FromQueryString(typeof(TQuery), queryString, mode);
         }
 
-        private static void SetQueryValue<TFilter>(Query<TFilter> query, string key, StringValues values)
+        private static void SetQueryValue<TFilter>(Query<TFilter> query, string key, StringValues values, FilterMode mode)
             where TFilter : new()
         {
-            var fieldType = GetFieldType(key);
+            var fieldType = GetFieldType(key, mode);
             switch (fieldType)
             {
                 case FieldType.FilterProperty:
-                    SetPropertyFilterValue(query, key, values);
+                    SetPropertyFilterValue(query, key, values, mode);
                     break;
                 case FieldType.SortProperty:
                     query.Sorts = GetSort(values);
@@ -89,7 +95,7 @@ namespace Qurl
             }
         }
 
-        private static FieldType GetFieldType(string key)
+        private static FieldType GetFieldType(string key, FilterMode mode)
         {
             if (key.ToUpper() == OffsetQueryField)
                 return FieldType.OffsetProperty;
@@ -100,7 +106,10 @@ namespace Qurl
             if (key.ToUpper() == SortQueryField)
                 return FieldType.SortProperty;
 
-            if (Regex.Match(key, PropNameFilterTypeRegEx).Success || Regex.Match(key, PropNameWithouyFilterTypeRegEx).Success)
+            if (mode == FilterMode.LHS && (Regex.Match(key, PropNameFilterTypeRegEx).Success || Regex.Match(key, PropNameWithouyFilterTypeRegEx).Success))
+                return FieldType.FilterProperty;
+
+            if (mode == FilterMode.RHS)
                 return FieldType.FilterProperty;
 
             throw new QurlParameterFormatException();
@@ -127,11 +136,11 @@ namespace Qurl
             return result;
         }
 
-        private static void SetPropertyFilterValue<TFilter>(Query<TFilter> query, string key, StringValues values)
+        private static void SetPropertyFilterValue<TFilter>(Query<TFilter> query, string key, StringValues values, FilterMode mode)
             where TFilter : new()
         {
             var properties = typeof(TFilter).GetCachedProperties();
-            var (propertyName, @operator) = GetPropertyNameAndOperator(key, values.Count > 1);
+            var (propertyName, @operator, value) = GetPropertyNameOperatorAndValue(key, values, mode);
 
             var propInfo = properties
                 .FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase));
@@ -144,9 +153,9 @@ namespace Qurl
             try
             {
                 if (propInfo == null || propInfo.PropertyType.GetGenericTypeDefinition() == typeof(FilterProperty<>))
-                    filter = GetFilterInstance(@operator, genericType, values);
+                    filter = GetFilterInstance(@operator, genericType, value);
                 else
-                    filter = GetFilterInstance(propInfo.PropertyType, values);
+                    filter = GetFilterInstance(propInfo.PropertyType, value);
             }
             catch (Exception)
             {
@@ -159,17 +168,39 @@ namespace Qurl
                 query.SetExtraFilterValue(propertyName, filter);
         }
 
-        private static (string propertyName, string @operator) GetPropertyNameAndOperator(string queryKey, bool valueIsArray = false)
+        private static (string propertyName, string @operator, string value) GetPropertyNameOperatorAndValue(string queryKey, StringValues values, FilterMode mode)
         {
-            var matches = Regex.Match(queryKey, PropNameFilterTypeRegEx);
-            if (matches.Success)
-                return (matches.Groups[1].Value, matches.Groups[2].Value.ToLower());
+            var valueIsArray = values.Count > 1;
 
-            matches = Regex.Match(queryKey, PropNameWithouyFilterTypeRegEx);
-            if (matches.Success)
-                return (matches.Groups[1].Value, valueIsArray ? IncludeOperation : EqualsOperation);
+            if (mode == FilterMode.LHS)
+            {
+                var matches = Regex.Match(queryKey, PropNameFilterTypeRegEx);
+                if (matches.Success)
+                    return (matches.Groups[1].Value, matches.Groups[2].Value.ToLower(), values.ToString());
 
-            return (queryKey, valueIsArray ? IncludeOperation : EqualsOperation);
+                matches = Regex.Match(queryKey, PropNameWithouyFilterTypeRegEx);
+                if (matches.Success)
+                    return (matches.Groups[1].Value, valueIsArray ? IncludeOperation : EqualsOperation, values.ToString());
+
+                return (queryKey, valueIsArray ? IncludeOperation : EqualsOperation, values.ToString());
+            }
+            else
+            {
+                var matches = Regex.Match(queryKey, PropNameWithouyFilterTypeRegEx);
+                if (matches.Success)
+                    queryKey = matches.Groups[1].Value;
+
+                if (valueIsArray)
+                    return (queryKey, IncludeOperation, values.ToString());
+
+                var separatorIndex = values[0].IndexOf(':');
+                if (separatorIndex < 0)
+                    return (queryKey, EqualsOperation, values.ToString());
+
+                var @operator = values[0].Substring(0, separatorIndex);
+                var value = values[0].Substring(separatorIndex + 1);
+                return (queryKey, @operator, value);
+            }
         }
 
         private static dynamic GetFilterInstance(string @operator, Type genericType, string value)

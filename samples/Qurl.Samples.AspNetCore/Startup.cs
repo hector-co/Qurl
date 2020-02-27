@@ -27,7 +27,14 @@ namespace Qurl.Samples.AspNetCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            // By default LHS mode
             services.AddQurlModelBinder();
+
+            // Available configs
+            // services.AddQurlModelBinder(options => options.UseRhsMode());
+            // services.AddQurlModelBinder(options => options.UseLhsMode());
+
             services.AddDbContext<SampleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SampleAspNetCore")));
         }
 
