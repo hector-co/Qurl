@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -45,6 +46,8 @@ namespace Qurl
             Fields = new List<string>();
             ExtraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
             Sorts = new List<(string property, SortDirection direction)>();
+
+            CustomData = new Dictionary<string, object>();
         }
 
         public TFilter Filter { get; set; }
@@ -55,6 +58,9 @@ namespace Qurl
         public List<(string property, SortDirection direction)> Sorts { get; set; }
         public int Offset { get; set; }
         public int Limit { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<string, object> CustomData { get; set; }
 
         internal Type GetFilterType(string name)
         {
