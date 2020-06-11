@@ -9,7 +9,7 @@ namespace Qurl.AspNetCore
         {
             serviceCollection.AddMvcCore(o =>
             {
-                o.ModelBinderProviders.Insert(0, new QueryModelBinderProvider(FilterMode.RHS));
+                o.ModelBinderProviders.Insert(0, new QueryModelBinderProvider(FilterMode.LHS));
             });
         }
 
