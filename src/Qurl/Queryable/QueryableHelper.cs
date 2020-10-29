@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Qurl.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Qurl.Queryable
 {
@@ -16,7 +18,7 @@ namespace Qurl.Queryable
             _query = query;
         }
 
-        public IQueryable<TModel> GetQueryable(IQueryable<TModel> source, bool applySort = true, bool selectFields = true)
+        public IQueryable<TModel> GetQueryable(IQueryable<TModel> source, bool applySort = false, bool applySelectFields = false)
         {
             var filterProperties = _query.Filter.GetType().GetCachedProperties();
 
@@ -47,7 +49,7 @@ namespace Qurl.Queryable
             if (applySort)
                 source = ApplySortAndPaging(source);
 
-            if (selectFields)
+            if (applySelectFields)
                 source = ApplySelectFields(source);
 
             return source;
@@ -94,7 +96,7 @@ namespace Qurl.Queryable
         public IQueryable<TModel> ApplySelectFields(IQueryable<TModel> source)
         {
             if (_query.Fields.Any())
-                source = source.Select(GetProperties(_query.Fields));
+                source = source.Select(BuildSelector(_query.Fields));
 
             return source;
         }
@@ -210,22 +212,28 @@ namespace Qurl.Queryable
             return (modelParameter, property);
         }
 
-        private static Expression<Func<TModel, TModel>> GetProperties(IEnumerable<string> propertyNames)
+        public static Expression<Func<TModel, TModel>> BuildSelector(IEnumerable<string> members)
         {
-            var modelParameter = Expression.Parameter(typeof(TModel), "m");
+            var parameter = Expression.Parameter(typeof(TModel), "e");
+            var body = NewObject(typeof(TModel), parameter, members.Select(m => m.Split('.')));
+            return Expression.Lambda<Func<TModel, TModel>>(body, parameter);
+        }
 
-            var bindings = propertyNames.Select(propName =>
+        static Expression NewObject(Type targetType, Expression source, IEnumerable<string[]> memberPaths, int depth = 0)
+        {
+            var bindings = new List<MemberBinding>();
+            var target = Expression.Constant(null, targetType);
+            foreach (var memberGroup in memberPaths.GroupBy(path => path[depth]))
             {
-                var propInfo = typeof(TModel).GetCachedProperties().FirstOrDefault(pr => pr.Name.Equals(propName, StringComparison.CurrentCultureIgnoreCase));
-                var sourceValue = Expression.Property(modelParameter, propInfo);
-
-                return Expression.Bind(propInfo, sourceValue);
-            }).ToList();
-
-            var newInstance = Expression.New(typeof(TModel));
-            var initializer = Expression.MemberInit(newInstance, bindings);
-
-            return Expression.Lambda<Func<TModel, TModel>>(initializer, modelParameter);
+                var memberName = memberGroup.Key;
+                var targetMember = Expression.PropertyOrField(target, memberName);
+                var sourceMember = Expression.PropertyOrField(source, memberName);
+                var childMembers = memberGroup.Where(path => depth + 1 < path.Length);
+                var targetValue = !childMembers.Any() ? sourceMember :
+                    NewObject(targetMember.Type, sourceMember, childMembers, depth + 1);
+                bindings.Add(Expression.Bind(targetMember.Member, targetValue));
+            }
+            return Expression.MemberInit(Expression.New(targetType), bindings);
         }
     }
 }

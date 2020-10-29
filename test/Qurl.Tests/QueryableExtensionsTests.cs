@@ -16,6 +16,7 @@ namespace Qurl.Tests
 
         private static SampleObjectWithRelationship SampleObjectWithRelationship1 = new SampleObjectWithRelationship { Prop1 = SampleoObject1 };
         private static SampleObjectWithRelationship SampleObjectWithRelationship2 = new SampleObjectWithRelationship { Prop1 = null };
+        private static SampleObjectWithRelationship SampleObjectWithRelationship3 = new SampleObjectWithRelationship { Prop1 = SampleoObject3 };
 
         private static SampleObject[] SampleOjectsCollection = new[]
         {
@@ -23,6 +24,11 @@ namespace Qurl.Tests
         };
 
         private static SampleObjectWithRelationship[] SampleObjectWithRelationshipsCollection = new[]
+        {
+            SampleObjectWithRelationship1, SampleObjectWithRelationship3
+        };
+
+        private static SampleObjectWithRelationship[] SampleObjectWithRelationshipsCollectionWithNulls = new[]
         {
             SampleObjectWithRelationship1, SampleObjectWithRelationship2
         };
@@ -115,13 +121,31 @@ namespace Qurl.Tests
             var query = new Query<SampleObjectFilter>();
             query.Fields.Add(fieldValue);
 
-            var results = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
+            var results = SampleOjectsCollection.AsQueryable().ApplyQuery(query, applySelectFields: true);
             foreach (var sampleObject in results)
             {
                 sampleObject.Prop1.Should().NotBe(default);
                 sampleObject.Prop2.Should().Be(default);
                 sampleObject.Prop3.Should().Be(default);
                 sampleObject.Prop4.Should().Be(default);
+            }
+        }
+
+        [Fact]
+        public void TestFieldsSelection2()
+        {
+            const string fieldValue = "prop1.prop1";
+            var query = new Query<SampleObjectWithRelationship>();
+            query.Fields.Add(fieldValue);
+
+            var results = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query, applySelectFields: true);
+            foreach (var sampleObject in results)
+            {
+                sampleObject.Prop1.Should().NotBe(default);
+                sampleObject.Prop1.Prop1.Should().NotBe(default);
+                sampleObject.Prop1.Prop2.Should().Be(default);
+                sampleObject.Prop1.Prop3.Should().Be(default);
+                sampleObject.Prop1.Prop4.Should().Be(default);
             }
         }
 
@@ -137,7 +161,7 @@ namespace Qurl.Tests
             };
 
             query.SetPropertyNameMapping("Prop1", "Prop1.Prop1", "Prop1");
-            var result = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query);
+            var result = SampleObjectWithRelationshipsCollectionWithNulls.AsQueryable().ApplyQuery(query);
             result.Count().Should().Be(expectedCount);
             result.FirstOrDefault().Prop1.Should().Be(prop1FilterValue);
         }
@@ -153,7 +177,7 @@ namespace Qurl.Tests
                 Value = prop1FilterValue
             };
 
-            var result = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query);
+            var result = SampleObjectWithRelationshipsCollectionWithNulls.AsQueryable().ApplyQuery(query);
             result.Count().Should().Be(expectedCount);
             result.FirstOrDefault().Prop1.Should().Be(prop1FilterValue);
         }

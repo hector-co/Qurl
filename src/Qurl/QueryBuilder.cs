@@ -33,8 +33,9 @@ namespace Qurl
         const string OffsetQueryField = "OFFSET";
         const string LimitQueryField = "LIMIT";
         const string SortQueryField = "SORT";
+        const string FieldsQueryField = "FIELDS";
 
-        const char SortSeparator = ',';
+        const char ListSeparator = ',';
         const string SortAscending = "+";
         const string SortDescending = "-";
 
@@ -43,7 +44,8 @@ namespace Qurl
             FilterProperty,
             SortProperty,
             OffsetProperty,
-            LimitProperty
+            LimitProperty,
+            FieldsProperty
         }
 
         public static object FromQueryString(Type queryType, string queryString, FilterMode mode = FilterMode.LHS)
@@ -92,6 +94,9 @@ namespace Qurl
                         throw new QurlParameterFormatException(nameof(Query<TFilter>.Limit));
                     query.Limit = limit;
                     break;
+                case FieldType.FieldsProperty:
+                    query.Fields = values.ToString().Split(ListSeparator).ToList();
+                    break;
             }
         }
 
@@ -106,6 +111,9 @@ namespace Qurl
             if (key.ToUpper() == SortQueryField)
                 return FieldType.SortProperty;
 
+            if (key.ToUpper() == FieldsQueryField)
+                return FieldType.FieldsProperty;
+
             if (mode == FilterMode.LHS && (Regex.Match(key, PropNameFilterTypeRegEx).Success || Regex.Match(key, PropNameWithouyFilterTypeRegEx).Success))
                 return FieldType.FilterProperty;
 
@@ -119,7 +127,7 @@ namespace Qurl
         {
             var result = new List<(string property, SortDirection direction)>();
 
-            var sorts = sortExpression.Split(SortSeparator);
+            var sorts = sortExpression.Split(ListSeparator);
             sorts = sorts.Select(s => s.Trim()).ToArray();
 
             foreach (var sort in sorts)

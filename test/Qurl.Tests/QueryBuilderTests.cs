@@ -102,6 +102,15 @@ namespace Qurl.Tests
             }
         }
 
+        [Theory]
+        [InlineData("fields=id,name", new[] { "id", "name" })]
+        [InlineData("fields=prop1,prop3,prop4.name", new[] { "prop1", "prop3", "prop4.name" })]
+        public void MapFieldsTest(string queryString, string[] properties)
+        {
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+            query.Fields.Should().BeEquivalentTo(properties);
+        }
+
         #region LHS
         [Fact]
         public void MapEqualsPropertyTest()
