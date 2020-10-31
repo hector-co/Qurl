@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Qurl.Queryable
 {
@@ -95,10 +94,17 @@ namespace Qurl.Queryable
 
         public IQueryable<TModel> ApplySelectFields(IQueryable<TModel> source)
         {
-            if (_query.Fields.Any())
-                source = source.Select(BuildSelector(_query.Fields));
+            try
+            {
+                if (_query.Fields.Any())
+                    source = source.Select(BuildSelector(_query.Fields));
 
-            return source;
+                return source;
+            }
+            catch (Exception ex)
+            {
+                throw new QurlParameterFormatException("Invalid select fields", ex);
+            }
         }
 
         private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(EqualsFilterProperty<TProperty> filter, QueryNameMapping nameMapping)

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Qurl.Exceptions;
 using Qurl.Queryable;
 using System;
 using System.Linq;
@@ -147,6 +148,18 @@ namespace Qurl.Tests
                 sampleObject.Prop1.Prop3.Should().Be(default);
                 sampleObject.Prop1.Prop4.Should().Be(default);
             }
+        }
+
+        [Fact]
+        public void SelectingNonExistenFieldsShouldThrowException()
+        {
+            const string fieldValue = "prop1.propN";
+            var query = new Query<SampleObjectWithRelationship>();
+            query.Fields.Add(fieldValue);
+
+            Action applyQuery = () => SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query, applySelectFields: true);
+
+            applyQuery.Should().Throw<QurlParameterFormatException>();
         }
 
         [Fact]
