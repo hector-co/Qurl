@@ -43,4 +43,11 @@ namespace Qurl.Tests
         public FilterProperty<int?> Prop1_2 { get; set; }
     }
 
+    public class SampleObjectQueryWithDefaultSort : Query<SampleObjectFilter>
+    {
+        public SampleObjectQueryWithDefaultSort() : base(defaultSort: ("prop1", SortDirection.Descending))
+        {
+
+        }
+    }
 }

@@ -20,9 +20,8 @@ namespace Qurl.Samples.AspNetCore.Models
 
     public class GroupQuery : Query<GroupFilter>
     {
-        public GroupQuery()
+        public GroupQuery() : base(defaultSort: ("Id", SortDirection.Ascending))
         {
-            DefaultSort = ("Id", SortDirection.Ascending);
         }
     }
 }

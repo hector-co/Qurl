@@ -51,8 +51,8 @@ namespace Qurl.Tests
             query.Sorts.Should().NotBeNull();
             query.Sorts.Count.Should().Be(0);
 
-            query.ExtraFilters.Should().NotBeNull();
-            query.ExtraFilters.Count.Should().Be(0);
+            query.GetExtraFilters().Should().NotBeNull();
+            query.GetExtraFilters().Count.Should().Be(0);
         }
 
         [Fact]
@@ -71,8 +71,17 @@ namespace Qurl.Tests
             query.Sorts.Should().NotBeNull();
             query.Sorts.Count.Should().Be(0);
 
-            query.ExtraFilters.Should().NotBeNull();
-            query.ExtraFilters.Count.Should().Be(0);
+            query.GetExtraFilters().Should().NotBeNull();
+            query.GetExtraFilters().Count.Should().Be(0);
+        }
+
+        [Fact]
+        public void TestDefaultSort()
+        {
+            var query = new SampleObjectQueryWithDefaultSort();
+            query.GetEvalSorts().Count.Should().Be(1);
+            query.GetEvalSorts().First().property.ToLower().Should().Be("prop1");
+            query.GetEvalSorts().First().direction.Should().Be(SortDirection.Descending);
         }
 
         [Theory]
