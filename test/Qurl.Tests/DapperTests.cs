@@ -271,7 +271,7 @@ namespace Qurl.Tests
         {
             var query = new Query<SampleObjectFilter>();
             const string ExpectedSort = "[Prop1] DESC";
-            query.Sorts.Add(("Prop1", SortDirection.Descending));
+            query.Sorts.Add(new SortValue("Prop1", SortDirection.Descending));
 
             var queryParts = query.GetQueryParts("SampleObject");
 
@@ -296,7 +296,7 @@ namespace Qurl.Tests
             var query = new Query<SampleObjectFilter>();
             const string ExpectedSort = "[Prop1] DESC";
             const string ExpectedPaging = "OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY";
-            query.Sorts.Add(("Prop1", SortDirection.Descending));
+            query.Sorts.Add(new SortValue("Prop1", SortDirection.Descending));
             query.Limit = 10;
             query.Offset = 20;
 

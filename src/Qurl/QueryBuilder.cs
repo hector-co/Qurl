@@ -123,9 +123,9 @@ namespace Qurl
             throw new QurlParameterFormatException();
         }
 
-        private static List<(string property, SortDirection direction)> GetSort(string sortExpression)
+        private static List<SortValue> GetSort(string sortExpression)
         {
-            var result = new List<(string property, SortDirection direction)>();
+            var result = new List<SortValue>();
 
             var sorts = sortExpression.Split(ListSeparator);
             sorts = sorts.Select(s => s.Trim()).ToArray();
@@ -134,11 +134,11 @@ namespace Qurl
             {
                 if (string.IsNullOrEmpty(sort)) continue;
                 if (sort.StartsWith(SortAscending))
-                    result.Add((sort.Substring(1), SortDirection.Ascending));
+                    result.Add(new SortValue(sort.Substring(1), SortDirection.Ascending));
                 if (sort.StartsWith(SortDescending))
-                    result.Add((sort.Substring(1), SortDirection.Descending));
+                    result.Add(new SortValue(sort.Substring(1), SortDirection.Descending));
                 else
-                    result.Add((sort, SortDirection.Ascending));
+                    result.Add(new SortValue(sort, SortDirection.Ascending));
             }
 
             return result;

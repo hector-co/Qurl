@@ -32,13 +32,24 @@ namespace Qurl
         }
     }
 
+    public class SortValue
+    {
+        public SortValue(string propertyName = default, SortDirection sortDirection = default)
+        {
+            PropertyName = propertyName;
+            SortDirection = sortDirection;
+        }
+
+        public string PropertyName { get; set; }
+        public SortDirection SortDirection { get; set; }
+    }
 
     public class Query<TFilter>
         where TFilter : new()
     {
         private readonly Dictionary<string, QueryNameMapping> _propsNameMappings;
         private readonly Dictionary<string, (Type type, IFilterProperty filter)> _extraFilters;
-        private readonly (string property, SortDirection direction) _defaultSort;
+        private readonly SortValue _defaultSort;
 
         public Query()
         {
@@ -46,18 +57,18 @@ namespace Qurl
             Filter = new TFilter();
             Fields = new List<string>();
             _extraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
-            Sorts = new List<(string property, SortDirection direction)>();
+            Sorts = new List<SortValue>();
         }
 
-        public Query((string property, SortDirection direction) defaultSort) : this()
+        public Query(SortValue defaultSort) : this()
         {
             _defaultSort = defaultSort;
         }
 
         public TFilter Filter { get; set; }
         public List<string> Fields { get; set; }
-        public string QueryString { get; set; }
-        public List<(string property, SortDirection direction)> Sorts { get; set; }
+        //public List<(string property, SortDirection direction)> Sorts { get; set; }
+        public List<SortValue> Sorts { get; set; }
         public int Offset { get; set; }
         public int Limit { get; set; }
 
@@ -68,15 +79,15 @@ namespace Qurl
             return _extraFilters[name].type;
         }
 
-        public List<(string property, SortDirection direction)> GetEvalSorts()
+        public List<SortValue> GetEvalSorts()
         {
             if (Sorts != null && Sorts.Count > 0)
                 return Sorts;
 
-            if (!string.IsNullOrEmpty(_defaultSort.property))
+            if (!string.IsNullOrEmpty(_defaultSort.PropertyName))
                 return new[] { _defaultSort }.ToList();
 
-            return new List<(string property, SortDirection direction)>();
+            return new List<SortValue>();
         }
 
         public void AddExtraFilter<TType>(string name)

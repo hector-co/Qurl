@@ -59,14 +59,14 @@ namespace Qurl.Queryable
             var modelProperties = typeof(TModel).GetCachedProperties();
             var applyThenBy = false;
 
-            foreach (var (property, direction) in _query.Sorts)
+            foreach (var sortValue in _query.Sorts)
             {
-                var sortPoperty = modelProperties.FirstOrDefault(p => p.Name.Equals(property, StringComparison.CurrentCultureIgnoreCase));
+                var sortPoperty = modelProperties.FirstOrDefault(p => p.Name.Equals(sortValue.PropertyName, StringComparison.CurrentCultureIgnoreCase));
                 if (sortPoperty == null) continue;
                 var propName = _query.GetPropertyMappedName(sortPoperty.Name);
                 Expression<Func<TModel, object>> predicate = GetSortExpression(propName.PropertyName);
 
-                if (direction == SortDirection.Ascending)
+                if (sortValue.SortDirection == SortDirection.Ascending)
                 {
                     if (!applyThenBy)
                         source = source.OrderBy(predicate);

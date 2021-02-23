@@ -80,8 +80,8 @@ namespace Qurl.Tests
         {
             var query = new SampleObjectQueryWithDefaultSort();
             query.GetEvalSorts().Count.Should().Be(1);
-            query.GetEvalSorts().First().property.ToLower().Should().Be("prop1");
-            query.GetEvalSorts().First().direction.Should().Be(SortDirection.Descending);
+            query.GetEvalSorts().First().PropertyName.ToLower().Should().Be("prop1");
+            query.GetEvalSorts().First().SortDirection.Should().Be(SortDirection.Descending);
         }
 
         [Theory]
@@ -106,8 +106,8 @@ namespace Qurl.Tests
             query.Sorts.Count.Should().Be(properties.Length);
             for (var i = 0; i < query.Sorts.Count; i++)
             {
-                query.Sorts[i].property.Should().Be(properties[i]);
-                query.Sorts[i].direction.Should().Be(directions[i]);
+                query.Sorts[i].PropertyName.Should().Be(properties[i]);
+                query.Sorts[i].SortDirection.Should().Be(directions[i]);
             }
         }
 

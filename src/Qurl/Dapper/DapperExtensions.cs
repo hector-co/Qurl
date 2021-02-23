@@ -71,11 +71,11 @@ namespace Qurl.Dapper
             where TFilter : new()
         {
             var orderBy = "";
-            foreach (var (property, direction) in query.Sorts)
+            foreach (var sortValue in query.Sorts)
             {
                 if (!string.IsNullOrEmpty(orderBy)) orderBy += ", ";
-                var sortProp = property.Replace(" ", "").Replace(";", "");
-                orderBy += $"[{sortProp}] {(direction == SortDirection.Descending ? "DESC" : "")}";
+                var sortProp = sortValue.PropertyName.Replace(" ", "").Replace(";", "");
+                orderBy += $"[{sortProp}] {(sortValue.SortDirection == SortDirection.Descending ? "DESC" : "")}";
             }
             if (string.IsNullOrEmpty(orderBy))
                 return ("", "");
