@@ -59,7 +59,7 @@ namespace Qurl.Queryable
             var modelProperties = typeof(TModel).GetCachedProperties();
             var applyThenBy = false;
 
-            foreach (var sortValue in _query.Sorts)
+            foreach (var sortValue in _query.GetEvalSorts())
             {
                 var sortPoperty = modelProperties.FirstOrDefault(p => p.Name.Equals(sortValue.PropertyName, StringComparison.CurrentCultureIgnoreCase));
                 if (sortPoperty == null) continue;
