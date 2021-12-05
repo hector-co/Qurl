@@ -9,41 +9,6 @@ namespace Qurl
         Ascending, Descending
     }
 
-    public struct QueryNameMapping
-    {
-        public QueryNameMapping(string propertyName, string mappedName = "", string nullValueNameFallback = "")
-        {
-            PropertyName = propertyName;
-            MappedName = mappedName;
-            NullValueMappedName = nullValueNameFallback;
-        }
-
-        public string PropertyName { get; set; }
-        public string MappedName { get; set; }
-        public string NullValueMappedName { get; set; }
-
-        public string GetName(bool tryApplyNullFallback = false)
-        {
-            if (tryApplyNullFallback && !string.IsNullOrEmpty(NullValueMappedName))
-                return NullValueMappedName;
-            if (!string.IsNullOrEmpty(MappedName))
-                return MappedName;
-            return PropertyName;
-        }
-    }
-
-    public class SortValue
-    {
-        public SortValue(string propertyName = default, SortDirection sortDirection = default)
-        {
-            PropertyName = propertyName;
-            SortDirection = sortDirection;
-        }
-
-        public string PropertyName { get; set; }
-        public SortDirection SortDirection { get; set; }
-    }
-
     public class Query<TFilter>
         where TFilter : new()
     {
@@ -67,7 +32,6 @@ namespace Qurl
 
         public TFilter Filter { get; set; }
         public List<string> Fields { get; set; }
-        //public List<(string property, SortDirection direction)> Sorts { get; set; }
         public List<SortValue> Sorts { get; set; }
         public int Offset { get; set; }
         public int Limit { get; set; }
@@ -84,7 +48,7 @@ namespace Qurl
             if (Sorts != null && Sorts.Count > 0)
                 return Sorts;
 
-            if (!string.IsNullOrEmpty(_defaultSort.PropertyName))
+            if (!string.IsNullOrEmpty(_defaultSort?.PropertyName))
                 return new[] { _defaultSort }.ToList();
 
             return new List<SortValue>();

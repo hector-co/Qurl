@@ -194,5 +194,19 @@ namespace Qurl.Tests
             result.Count().Should().Be(expectedCount);
             result.FirstOrDefault().Prop1.Should().Be(prop1FilterValue);
         }
+
+        [Fact]
+        public void EmptySortShouldNotThrowException()
+        {
+            const int prop1FilterValue = 2;
+            var query = new Query<SampleObjectFilter>();
+            query.Filter.Prop1 = new EqualsFilterProperty<int>
+            {
+                Value = prop1FilterValue
+            };
+
+            var result = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
+            result.ApplySortAndPaging(query);
+        }
     }
 }
