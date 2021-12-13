@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.6</Version>
+    <Version>0.2.7</Version>
     <RepositoryUrl>https://github.com/hector-co/Qurl</RepositoryUrl>
     <PackageProjectUrl>https://github.com/hector-co/Qurl</PackageProjectUrl>
     <Authors>Hector Carballo</Authors>
-    <Copyright>Copyright © 2018 Hector Carballo</Copyright>
+    <Copyright>Copyright © 2021 Hector Carballo</Copyright>
     <Company>Hco</Company>
     <Description>Qurl AspNetCore model binder</Description>
     <PackageTags>QueryString LHS</PackageTags>

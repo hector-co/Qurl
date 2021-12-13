@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.6.8</Version>
+    <Version>0.6.9</Version>
     <Authors>Hector Carballo</Authors>
     <Company>Hco</Company>
     <Description>QueryString (LHS)</Description>
-    <Copyright>Copyright © 2018 Hector Carballo</Copyright>
+    <Copyright>Copyright © 2021 Hector Carballo</Copyright>
     <PackageProjectUrl>https://github.com/hector-co/Qurl</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hector-co/Qurl</RepositoryUrl>
     <PackageTags>QueryString LHS</PackageTags>
