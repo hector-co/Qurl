@@ -22,7 +22,7 @@ namespace Qurl
             Filter = new TFilter();
             Fields = new List<string>();
             _extraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
-            Sorts = new List<SortValue>();
+            Sort = new List<SortValue>();
         }
 
         public Query(SortValue defaultSort) : this()
@@ -32,7 +32,7 @@ namespace Qurl
 
         public TFilter Filter { get; set; }
         public List<string> Fields { get; set; }
-        public List<SortValue> Sorts { get; set; }
+        public List<SortValue> Sort { get; set; }
         public int Offset { get; set; }
         public int Limit { get; set; }
 
@@ -45,8 +45,8 @@ namespace Qurl
 
         public List<SortValue> GetEvalSorts()
         {
-            if (Sorts != null && Sorts.Count > 0)
-                return Sorts;
+            if (Sort != null && Sort.Count > 0)
+                return Sort;
 
             if (!string.IsNullOrEmpty(_defaultSort?.PropertyName))
                 return new[] { _defaultSort }.ToList();

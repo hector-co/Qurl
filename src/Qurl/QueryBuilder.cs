@@ -30,10 +30,10 @@ namespace Qurl
         const string NotIncludeOperation = "NIN";
         const string RangeOperation = "RNG";
 
-        const string OffsetQueryField = "OFFSET";
-        const string LimitQueryField = "LIMIT";
-        const string SortQueryField = "SORT";
-        const string FieldsQueryField = "FIELDS";
+        public const string OffsetQueryField = "OFFSET";
+        public const string LimitQueryField = "LIMIT";
+        public const string SortQueryField = "SORT";
+        public const string FieldsQueryField = "FIELDS";
 
         const char ListSeparator = ',';
         const string SortAscending = "+";
@@ -82,7 +82,7 @@ namespace Qurl
                     SetPropertyFilterValue(query, key, values, mode);
                     break;
                 case FieldType.SortProperty:
-                    query.Sorts = GetSort(values);
+                    query.Sort = GetSort(values);
                     break;
                 case FieldType.OffsetProperty:
                     if (!int.TryParse(values, out var offset))

@@ -48,8 +48,8 @@ namespace Qurl.Tests
             query.Offset.Should().Be(0);
             query.Limit.Should().Be(0);
 
-            query.Sorts.Should().NotBeNull();
-            query.Sorts.Count.Should().Be(0);
+            query.Sort.Should().NotBeNull();
+            query.Sort.Count.Should().Be(0);
 
             query.GetExtraFilters().Should().NotBeNull();
             query.GetExtraFilters().Count.Should().Be(0);
@@ -68,8 +68,8 @@ namespace Qurl.Tests
             query.Offset.Should().Be(0);
             query.Limit.Should().Be(0);
 
-            query.Sorts.Should().NotBeNull();
-            query.Sorts.Count.Should().Be(0);
+            query.Sort.Should().NotBeNull();
+            query.Sort.Count.Should().Be(0);
 
             query.GetExtraFilters().Should().NotBeNull();
             query.GetExtraFilters().Count.Should().Be(0);
@@ -103,11 +103,11 @@ namespace Qurl.Tests
         public void MapSortingTest(string queryString, string[] properties, SortDirection[] directions)
         {
             var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
-            query.Sorts.Count.Should().Be(properties.Length);
-            for (var i = 0; i < query.Sorts.Count; i++)
+            query.Sort.Count.Should().Be(properties.Length);
+            for (var i = 0; i < query.Sort.Count; i++)
             {
-                query.Sorts[i].PropertyName.Should().Be(properties[i]);
-                query.Sorts[i].SortDirection.Should().Be(directions[i]);
+                query.Sort[i].PropertyName.Should().Be(properties[i]);
+                query.Sort[i].SortDirection.Should().Be(directions[i]);
             }
         }
 

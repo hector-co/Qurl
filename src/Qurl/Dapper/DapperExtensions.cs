@@ -71,7 +71,7 @@ namespace Qurl.Dapper
             where TFilter : new()
         {
             var orderBy = "";
-            foreach (var sortValue in query.Sorts)
+            foreach (var sortValue in query.Sort)
             {
                 if (!string.IsNullOrEmpty(orderBy)) orderBy += ", ";
                 var sortProp = sortValue.PropertyName.Replace(" ", "").Replace(";", "");

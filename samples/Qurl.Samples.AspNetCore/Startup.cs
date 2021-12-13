@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Qurl.AspNetCore;
 using Qurl.Samples.AspNetCore.Models;
+using Qurl.SwaggerDefinitions;
 
 namespace Qurl.Samples.AspNetCore
 {
@@ -38,7 +33,10 @@ namespace Qurl.Samples.AspNetCore
 
             services.AddDbContext<SampleContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SampleAspNetCore")));
 
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                options.AddQurlDefinitions();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
