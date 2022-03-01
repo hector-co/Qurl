@@ -13,10 +13,7 @@ namespace Qurl.SwaggerDefinitions
                 parameter.Name = FormatName(parameter.Name);
                 if (parameter.Schema?.Reference != null)
                 {
-                    foreach (var field in context.SchemaRepository.Schemas.Keys)
-                    {
-                        context.SchemaRepository.Schemas.Remove(field);
-                    }
+                    context.SchemaRepository.Schemas.Remove(parameter.Schema.Reference.Id);
                 }
                 if (parameter.Name.ToUpper() == QueryBuilder.FieldsQueryField || parameter.Name.ToUpper() == QueryBuilder.SortQueryField)
                 {
@@ -24,6 +21,8 @@ namespace Qurl.SwaggerDefinitions
                     parameter.Schema.Reference = null;
                     parameter.Schema.Type = "string";
                     parameter.Schema.Items = null;
+                    context.SchemaRepository.Schemas.Remove(nameof(SortDirection));
+                    context.SchemaRepository.Schemas.Remove(nameof(SortValue));
                 }
                 else if (parameter.Name.ToUpper() != QueryBuilder.OffsetQueryField && parameter.Name.ToUpper() != QueryBuilder.LimitQueryField)
                 {
