@@ -26,6 +26,8 @@ namespace Qurl
         const string GreaterThanOperation = "GT";
         const string GreaterThanOrEqualOperation = "GTE";
         const string ContainsOperation = "CT";
+        const string StartsWithOperation = "SW";
+        const string EndsWithOperation = "EW";
         const string IncludeOperation = "IN";
         const string NotIncludeOperation = "NIN";
         const string RangeOperation = "RNG";
@@ -248,6 +250,10 @@ namespace Qurl
                     return typeof(GreaterThanOrEqualFilterProperty<>);
                 case ContainsOperation:
                     return typeof(ContainsFilterProperty<>);
+                case StartsWithOperation:
+                    return typeof(StartsWithFilterProperty<>);
+                case EndsWithOperation:
+                    return typeof(EndsWithFilterProperty<>);
                 case IncludeOperation:
                     return typeof(InFilterProperty<>);
                 case NotIncludeOperation:

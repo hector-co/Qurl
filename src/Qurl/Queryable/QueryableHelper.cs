@@ -163,6 +163,22 @@ namespace Qurl.Queryable
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(StartsWithFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
+        {
+            var propName = nameMapping.GetName(filter.Value == null);
+            var (modelParameter, property) = GetModelParamaterAndProperty(propName);
+            var comparison = Expression.Call(property, typeof(TProperty).GetMethod("StartsWith", new[] { typeof(TProperty) }), Expression.Constant(filter.Value));
+            return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
+        }
+
+        private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(EndsWithFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
+        {
+            var propName = nameMapping.GetName(filter.Value == null);
+            var (modelParameter, property) = GetModelParamaterAndProperty(propName);
+            var comparison = Expression.Call(property, typeof(TProperty).GetMethod("EndsWith", new[] { typeof(TProperty) }), Expression.Constant(filter.Value));
+            return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
+        }
+
         private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(InFilterProperty<TProperty> filter, QueryNameMapping nameMapping)
         {
             var propName = nameMapping.GetName(filter.Values == null);

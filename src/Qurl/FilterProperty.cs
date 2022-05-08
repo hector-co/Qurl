@@ -51,6 +51,16 @@ namespace Qurl
 
     }
 
+    public class StartsWithFilterProperty<TValue> : SingleValueFilterProperty<TValue>
+    {
+
+    }
+
+    public class EndsWithFilterProperty<TValue> : SingleValueFilterProperty<TValue>
+    {
+
+    }
+
     public class InFilterProperty<TValue> : FilterProperty<TValue>
     {
         private List<TValue> _values;

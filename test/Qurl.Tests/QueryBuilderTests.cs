@@ -262,6 +262,38 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void MapStartsWithPropertyTest()
+        {
+            var nameExpectedValue = "string value";
+
+            var queryString = $"name[sw]={nameExpectedValue}";
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.Name.Should().NotBeNull();
+            query.Filter.Name.GetType().Should().Be(typeof(StartsWithFilterProperty<string>));
+            ((StartsWithFilterProperty<string>)query.Filter.Name).Value.Should().Be(nameExpectedValue);
+
+            query.Filter.Id.Should().BeNull();
+            query.Filter.Active.Should().BeNull();
+        }
+
+        [Fact]
+        public void MapEndsWithPropertyTest()
+        {
+            var nameExpectedValue = "string value";
+
+            var queryString = $"name[ew]={nameExpectedValue}";
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.Name.Should().NotBeNull();
+            query.Filter.Name.GetType().Should().Be(typeof(EndsWithFilterProperty<string>));
+            ((EndsWithFilterProperty<string>)query.Filter.Name).Value.Should().Be(nameExpectedValue);
+
+            query.Filter.Id.Should().BeNull();
+            query.Filter.Active.Should().BeNull();
+        }
+
+        [Fact]
         public void MapInPropertyTest()
         {
             var idExpectedValues = new[] { 3, 8, 15 };
@@ -502,6 +534,38 @@ namespace Qurl.Tests
             query.Filter.Active.Should().NotBeNull();
             query.Filter.Active.GetType().Should().Be(typeof(ContainsFilterProperty<bool>));
             ((ContainsFilterProperty<bool>)query.Filter.Active).Value.Should().Be(activeExpectedValue);
+        }
+
+        [Fact]
+        public void MapStartsWithPropertyRhsTest()
+        {
+            var nameExpectedValue = "string value";
+
+            var queryString = $"name=sw:{nameExpectedValue}";
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString, FilterMode.RHS);
+
+            query.Filter.Name.Should().NotBeNull();
+            query.Filter.Name.GetType().Should().Be(typeof(StartsWithFilterProperty<string>));
+            ((StartsWithFilterProperty<string>)query.Filter.Name).Value.Should().Be(nameExpectedValue);
+
+            query.Filter.Id.Should().BeNull();
+            query.Filter.Active.Should().BeNull();
+        }
+
+        [Fact]
+        public void MapEndsWithPropertyRhsTest()
+        {
+            var nameExpectedValue = "string value";
+
+            var queryString = $"name=ew:{nameExpectedValue}";
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString, FilterMode.RHS);
+
+            query.Filter.Name.Should().NotBeNull();
+            query.Filter.Name.GetType().Should().Be(typeof(EndsWithFilterProperty<string>));
+            ((EndsWithFilterProperty<string>)query.Filter.Name).Value.Should().Be(nameExpectedValue);
+
+            query.Filter.Id.Should().BeNull();
+            query.Filter.Active.Should().BeNull();
         }
 
         [Fact]

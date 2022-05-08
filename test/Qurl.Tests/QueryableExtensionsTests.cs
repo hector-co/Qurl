@@ -116,6 +116,36 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void TestStartsWithFilter()
+        {
+            const string searchValue = "string";
+            const int expectedCount = 2;
+            var query = new Query<SampleObjectFilter>();
+            query.Filter.Prop2 = new StartsWithFilterProperty<string>
+            {
+                Value = searchValue
+            };
+
+            var result = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
+            result.Count().Should().Be(expectedCount);
+        }
+
+        [Fact]
+        public void TestEndsWithFilter()
+        {
+            const string searchValue = "1";
+            const int expectedCount = 2;
+            var query = new Query<SampleObjectFilter>();
+            query.Filter.Prop2 = new EndsWithFilterProperty<string>
+            {
+                Value = searchValue
+            };
+
+            var result = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
+            result.Count().Should().Be(expectedCount);
+        }
+
+        [Fact]
         public void TestFieldsSelection()
         {
             const string fieldValue = "prop1";
