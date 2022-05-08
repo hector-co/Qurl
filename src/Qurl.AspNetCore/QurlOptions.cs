@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Qurl.AspNetCore
+namespace Qurl
 {
     public class QurlOptions
     {

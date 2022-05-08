@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Qurl
@@ -47,6 +48,14 @@ namespace Qurl
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             Properties.TryAdd(type, properties);
             return properties;
+        }
+
+        public static dynamic CreateInstance(this Type type)
+        {
+            NewExpression constructorExpression = Expression.New(type);
+            Expression<Func<object>> lambdaExpression = Expression.Lambda<Func<object>>(constructorExpression);
+            Func<object> createObjFunc = lambdaExpression.Compile();
+            return createObjFunc();
         }
     }
 }

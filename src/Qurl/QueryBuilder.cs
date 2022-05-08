@@ -55,7 +55,7 @@ namespace Qurl
                 throw new QurlException($"{queryType.Name} is not a valid type");
             }
 
-            var query = (dynamic)Activator.CreateInstance(queryType);
+            var query = queryType.CreateInstance();
 
             var queryDictionary = QueryHelpers.ParseQuery(queryString);
 
@@ -216,7 +216,7 @@ namespace Qurl
             var filterGenericType = GetFilterGenericType(@operator);
             var filterType = filterGenericType.MakeGenericType(genericType);
 
-            var filterInstance = (dynamic)Activator.CreateInstance(filterType);
+            var filterInstance = filterType.CreateInstance();
             FilterPropertyExtensions.SetValue(filterInstance, value);
 
             return filterInstance;
@@ -224,7 +224,7 @@ namespace Qurl
 
         private static dynamic GetFilterInstance(Type filterPropertyType, string value)
         {
-            var filterInstance = (dynamic)Activator.CreateInstance(filterPropertyType);
+            var filterInstance = filterPropertyType.CreateInstance();
             FilterPropertyExtensions.SetValue(filterInstance, value);
 
             return filterInstance;

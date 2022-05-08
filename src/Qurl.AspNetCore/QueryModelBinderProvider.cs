@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Qurl;
 
-namespace Qurl.AspNetCore
+namespace Qurl
 {
     public class QueryModelBinderProvider : IModelBinderProvider
     {

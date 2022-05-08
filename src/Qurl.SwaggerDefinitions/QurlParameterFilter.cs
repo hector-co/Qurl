@@ -2,7 +2,7 @@
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
-namespace Qurl.SwaggerDefinitions
+namespace Qurl
 {
     public class QurlParameterFilter : IParameterFilter
     {

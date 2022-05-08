@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Qurl.AspNetCore
+namespace Qurl
 {
     public static class ServiceCollectionExtensions
     {

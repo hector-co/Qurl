@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Qurl;
 using System;
 using System.Threading.Tasks;
 
-namespace Qurl.AspNetCore
+namespace Qurl
 {
     public class QueryModelBinder : IModelBinder
     {

@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Qurl.AspNetCore;
 using Qurl.Samples.AspNetCore.Models;
-using Qurl.SwaggerDefinitions;
 
 namespace Qurl.Samples.AspNetCore
 {
