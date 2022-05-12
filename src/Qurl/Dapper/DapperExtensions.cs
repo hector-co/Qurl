@@ -140,6 +140,16 @@ namespace Qurl.Dapper
             return ($"{columnName} LIKE CONCAT('%', {filterName}, '%')", new Dictionary<string, object> { { filterName, filter.Value } });
         }
 
+        private static (string queryFilter, Dictionary<string, object> parameters) GetSqlFilter<T>(this StartsWithFilterProperty<T> filter, string columnName, string filterName)
+        {
+            return ($"{columnName} LIKE CONCAT({filterName}, '%')", new Dictionary<string, object> { { filterName, filter.Value } });
+        }
+
+        private static (string queryFilter, Dictionary<string, object> parameters) GetSqlFilter<T>(this EndsWithFilterProperty<T> filter, string columnName, string filterName)
+        {
+            return ($"{columnName} LIKE CONCAT('%', {filterName})", new Dictionary<string, object> { { filterName, filter.Value } });
+        }
+
         private static (string queryFilter, Dictionary<string, object> parameters) GetSqlFilter<T>(this InFilterProperty<T> filter, string columnName, string filterName)
         {
             return ($"{columnName} IN {filterName}", new Dictionary<string, object> { { filterName, filter.Values } });

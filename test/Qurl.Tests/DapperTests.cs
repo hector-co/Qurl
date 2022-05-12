@@ -189,6 +189,48 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void TestStartsWithFilter()
+        {
+            const int prop1FilterValue = 2;
+            const string column = "Prop1";
+            var expectedParamterName = $"@{column}";
+            var expectedFilter = $"[{column}] LIKE CONCAT({ expectedParamterName}, '%')";
+            var query = new Query<SampleObjectFilter>();
+            query.Filter.Prop1 = new StartsWithFilterProperty<int>
+            {
+                Value = prop1FilterValue
+            };
+
+            var queryParts = query.GetQueryParts("SampleObject");
+
+            queryParts.Filters.Should().Be(expectedFilter);
+            queryParts.Parameters.Should().NotBeEmpty();
+            queryParts.Parameters.Should().ContainKey(expectedParamterName);
+            queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
+        }
+
+        [Fact]
+        public void TestEndsWithFilter()
+        {
+            const int prop1FilterValue = 2;
+            const string column = "Prop1";
+            var expectedParamterName = $"@{column}";
+            var expectedFilter = $"[{column}] LIKE CONCAT('%', { expectedParamterName})";
+            var query = new Query<SampleObjectFilter>();
+            query.Filter.Prop1 = new EndsWithFilterProperty<int>
+            {
+                Value = prop1FilterValue
+            };
+
+            var queryParts = query.GetQueryParts("SampleObject");
+
+            queryParts.Filters.Should().Be(expectedFilter);
+            queryParts.Parameters.Should().NotBeEmpty();
+            queryParts.Parameters.Should().ContainKey(expectedParamterName);
+            queryParts.Parameters[expectedParamterName].Should().Be(prop1FilterValue);
+        }
+
+        [Fact]
         public void TestInFilter()
         {
             var prop1FilterValues = new[] { 2, 4 };
