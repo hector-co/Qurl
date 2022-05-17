@@ -18,11 +18,12 @@ namespace Qurl
 
         public Query()
         {
-            _propsNameMappings = new Dictionary<string, QueryNameMapping>();
+            _propsNameMappings = new Dictionary<string, QueryNameMapping>(StringComparer.InvariantCultureIgnoreCase);
             Filter = new TFilter();
             Fields = new List<string>();
             _extraFilters = new Dictionary<string, (Type type, IFilterProperty filter)>(StringComparer.OrdinalIgnoreCase);
             Sort = new List<SortValue>();
+            InitMappings();
         }
 
         public Query(SortValue defaultSort) : this()
@@ -91,6 +92,23 @@ namespace Qurl
                 AddExtraFilter<string>(name);
             var (type, filter) = _extraFilters[name];
             _extraFilters[name] = (type, filterProperty);
+        }
+
+        private void InitMappings()
+        {
+            var filterProperties = Filter.GetType().GetCachedProperties();
+
+            foreach (var filterProp in filterProperties)
+            {
+                var mapFilterAttr = (MapFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(MapFilterAttribute));
+                if (mapFilterAttr == null || string.IsNullOrEmpty(mapFilterAttr.MappedName))
+                    continue;
+
+                if (_propsNameMappings.ContainsKey(filterProp.Name))
+                    continue;
+
+                _propsNameMappings.Add(filterProp.Name, new QueryNameMapping(filterProp.Name, mapFilterAttr.MappedName, mapFilterAttr.NullValueMappedName));
+            }
         }
     }
 }

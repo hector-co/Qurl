@@ -18,6 +18,7 @@ namespace Qurl.Tests
         private static SampleObjectWithRelationship SampleObjectWithRelationship1 = new SampleObjectWithRelationship { Prop1 = SampleoObject1 };
         private static SampleObjectWithRelationship SampleObjectWithRelationship2 = new SampleObjectWithRelationship { Prop1 = null };
         private static SampleObjectWithRelationship SampleObjectWithRelationship3 = new SampleObjectWithRelationship { Prop1 = SampleoObject3 };
+        private static SampleObjectWithRelationship SampleObjectWithRelationship4 = new SampleObjectWithRelationship { Prop1 = SampleoObject5 };
 
         private static SampleObject[] SampleOjectsCollection = new[]
         {
@@ -26,7 +27,7 @@ namespace Qurl.Tests
 
         private static SampleObjectWithRelationship[] SampleObjectWithRelationshipsCollection = new[]
         {
-            SampleObjectWithRelationship1, SampleObjectWithRelationship3
+            SampleObjectWithRelationship1, SampleObjectWithRelationship3, SampleObjectWithRelationship4
         };
 
         private static SampleObjectWithRelationship[] SampleObjectWithRelationshipsCollectionWithNulls = new[]
@@ -237,6 +238,44 @@ namespace Qurl.Tests
 
             var result = SampleOjectsCollection.AsQueryable().ApplyQuery(query);
             result.ApplySortAndPaging(query);
+        }
+
+        [Theory]
+        [InlineData(SortDirection.Ascending)]
+        [InlineData(SortDirection.Descending)]
+        public void SortWithNestedProperty(SortDirection sortDirection)
+        {
+            var query = new Query<SampleObjectWithRelationship>();
+            query.Sort.Add(new SortValue("Prop1.Prop2", sortDirection));
+
+
+            var queryable = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query);
+            queryable = queryable.ApplySortAndPaging(query);
+            var result = queryable.ToList();
+
+
+            if (sortDirection == SortDirection.Ascending)
+            {
+                SampleObjectWithRelationshipsCollection.OrderBy(p => p.Prop1.Prop2).Should().BeEquivalentTo(result);
+            }
+            if (sortDirection == SortDirection.Descending)
+            {
+                SampleObjectWithRelationshipsCollection.OrderByDescending(p => p.Prop1.Prop2).Should().BeEquivalentTo(result);
+            }
+        }
+
+        [Theory]
+        [InlineData(SortDirection.Ascending)]
+        [InlineData(SortDirection.Descending)]
+        public void SortWithInvalidPropertyNameShouldNotThrowException(SortDirection sortDirection)
+        {
+            var query = new Query<SampleObjectWithRelationship>();
+            query.Sort.Add(new SortValue("Prop1.Prop2_test", sortDirection));
+
+
+            var queryable = SampleObjectWithRelationshipsCollectionWithNulls.AsQueryable().ApplyQuery(query);
+            queryable = queryable.ApplySortAndPaging(query);
+            var result = queryable.ToList();
         }
     }
 }

@@ -30,16 +30,12 @@ namespace Qurl.Queryable
                 if (customFilterAttr != null)
                     continue;
 
-                var mapFilterAttr = (MapFilterAttribute)Attribute.GetCustomAttribute(filterProp, typeof(MapFilterAttribute));
-                if (mapFilterAttr != null && string.IsNullOrEmpty(mapFilterAttr.MappedName))
-                    continue;
-
                 var filterProperty = (dynamic)filterProp.GetValue(_query.Filter);
                 if (filterProperty == null) continue;
 
-                var propertyNameMapping = _query.PropertyNameHasMapping(filterProp.Name) || mapFilterAttr == null
+                var propertyNameMapping = _query.PropertyNameHasMapping(filterProp.Name)
                     ? _query.GetPropertyMappedName(filterProp.Name)
-                    : new QueryNameMapping(filterProp.Name, mapFilterAttr.MappedName, mapFilterAttr.NullValueMappedName);
+                    : new QueryNameMapping(filterProp.Name);
 
                 Expression<Func<TModel, bool>> predicate = GetPredicate(filterProperty, propertyNameMapping);
                 source = source.Where(predicate);
@@ -56,15 +52,18 @@ namespace Qurl.Queryable
 
         public IQueryable<TModel> ApplySortAndPaging(IQueryable<TModel> source)
         {
-            var modelProperties = typeof(TModel).GetCachedProperties();
             var applyThenBy = false;
 
             foreach (var sortValue in _query.GetEvalSorts())
             {
-                var sortPoperty = modelProperties.FirstOrDefault(p => p.Name.Equals(sortValue.PropertyName, StringComparison.CurrentCultureIgnoreCase));
-                if (sortPoperty == null) continue;
-                var propName = _query.GetPropertyMappedName(sortPoperty.Name);
-                Expression<Func<TModel, object>> predicate = GetSortExpression(propName.PropertyName);
+                var propName = sortValue.PropertyName;
+                if (_query.PropertyNameHasMapping(sortValue.PropertyName))
+                    propName = _query.GetPropertyMappedName(sortValue.PropertyName).MappedName;
+
+                if (!TryGetSortExpression(propName, out var predicate))
+                {
+                    continue;
+                }
 
                 if (sortValue.SortDirection == SortDirection.Ascending)
                 {
@@ -213,12 +212,15 @@ namespace Qurl.Queryable
             return Expression.Lambda<Func<TModel, bool>>(comparison, modelParameter);
         }
 
-        private static Expression<Func<TModel, object>> GetSortExpression(string propName)
+        private static bool TryGetSortExpression(string propName, out Expression<Func<TModel, object>> sortExpression)
         {
-            var (modelParameter, property) = GetModelParamaterAndProperty(propName);
-            Expression conversion = Expression.Convert(Expression.Property
-                (modelParameter, propName), typeof(object));
-            return Expression.Lambda<Func<TModel, object>>(conversion, modelParameter);
+            if (TryGetModelParamaterAndProperty(propName, out var result))
+            {
+                sortExpression = Expression.Lambda<Func<TModel, object>>(Expression.Convert(result.property, typeof(object)), result.modelParameter);
+                return true;
+            }
+            sortExpression = null;
+            return false;
         }
 
         private static (ParameterExpression modelParameter, Expression property) GetModelParamaterAndProperty(string propName)
@@ -228,10 +230,32 @@ namespace Qurl.Queryable
 
             foreach (var member in propName.Split('.'))
             {
+                if (!property.Type.GetCachedProperties().Any(t => t.Name.Equals(member, StringComparison.InvariantCultureIgnoreCase)))
+                    continue;
+
                 property = Expression.Property(property, member);
             }
 
             return (modelParameter, property);
+        }
+
+        private static bool TryGetModelParamaterAndProperty(string propName, out (ParameterExpression modelParameter, Expression property) result)
+        {
+            var processed = false;
+            var modelParameter = Expression.Parameter(typeof(TModel), "m");
+            Expression property = modelParameter;
+
+            foreach (var member in propName.Split('.'))
+            {
+                if (!property.Type.GetCachedProperties().Any(t => t.Name.Equals(member, StringComparison.InvariantCultureIgnoreCase)))
+                    continue;
+
+                processed = true;
+                property = Expression.Property(property, member);
+            }
+
+            result = (modelParameter, property);
+            return processed;
         }
 
         public static Expression<Func<TModel, TModel>> BuildSelector(IEnumerable<string> members)

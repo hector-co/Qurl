@@ -45,7 +45,7 @@ namespace Qurl
                 if (Properties.TryGetValue(type, out var props))
                     return props;
             }
-            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             Properties.TryAdd(type, properties);
             return properties;
         }
