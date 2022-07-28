@@ -50,9 +50,6 @@ namespace Qurl.Tests
 
             query.Sort.Should().NotBeNull();
             query.Sort.Count.Should().Be(0);
-
-            query.GetExtraFilters().Should().NotBeNull();
-            query.GetExtraFilters().Count.Should().Be(0);
         }
 
         [Fact]
@@ -70,9 +67,6 @@ namespace Qurl.Tests
 
             query.Sort.Should().NotBeNull();
             query.Sort.Count.Should().Be(0);
-
-            query.GetExtraFilters().Should().NotBeNull();
-            query.GetExtraFilters().Count.Should().Be(0);
         }
 
         [Fact]

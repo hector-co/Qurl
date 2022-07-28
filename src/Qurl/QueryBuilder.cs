@@ -174,8 +174,6 @@ namespace Qurl
 
             if (propInfo != null)
                 propInfo.SetValue(query.Filter, filter);
-            else
-                query.SetExtraFilterValue(propertyName, filter);
         }
 
         private static (string propertyName, string @operator, string value) GetPropertyNameOperatorAndValue(string queryKey, StringValues values, FilterMode mode)
