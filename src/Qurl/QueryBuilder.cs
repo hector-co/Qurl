@@ -18,6 +18,7 @@ namespace Qurl
     {
         const string PropNameFilterTypeRegEx = @"(?i:filter\.)?\.?(.*)?\[(.*)?\]";
         const string PropNameWithouyFilterTypeRegEx = @"(?i:filter\.)?\.?(.*)";
+        const string SplitArrayValuesRegEx = @"((?:\s*"".*?""\s*)|[^,""]*)";
 
         const string EqualsOperation = "EQ";
         const string NotEqualsOperation = "NEQ";
@@ -216,16 +217,16 @@ namespace Qurl
             var filterGenericType = GetFilterGenericType(@operator);
             var filterType = filterGenericType.MakeGenericType(genericType);
 
-            var filterInstance = filterType.CreateInstance();
-            FilterPropertyExtensions.SetValue(filterInstance, value);
+            var filterInstance = (IFilterProperty)filterType.CreateInstance();
+            filterInstance.SetValueFromString(SplitValues(value).ToArray());
 
             return filterInstance;
         }
 
         private static dynamic GetFilterInstance(Type filterPropertyType, string value)
         {
-            var filterInstance = filterPropertyType.CreateInstance();
-            FilterPropertyExtensions.SetValue(filterInstance, value);
+            var filterInstance = (IFilterProperty)filterPropertyType.CreateInstance();
+            filterInstance.SetValueFromString(SplitValues(value).ToArray());
 
             return filterInstance;
         }
@@ -261,6 +262,23 @@ namespace Qurl
                 default:
                     throw new QurlException(nameof(@operator));
             }
+        }
+
+        private static List<string> SplitValues(string values)
+        {
+            if (string.IsNullOrEmpty(values))
+                return new List<string>();
+
+            var matches = Regex.Matches(values, SplitArrayValuesRegEx);
+            var result = new List<string>();
+            var prevIsEmpy = false;
+            foreach (Match match in matches)
+            {
+                if ((!string.IsNullOrEmpty(match.Value) || match.Index == 0) || string.IsNullOrEmpty(match.Value) && prevIsEmpy)
+                    result.Add(match.Value);
+                prevIsEmpy = string.IsNullOrEmpty(match.Value);
+            }
+            return result;
         }
     }
 }
