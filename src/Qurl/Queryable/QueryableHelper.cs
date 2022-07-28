@@ -17,7 +17,7 @@ namespace Qurl.Queryable
             _query = query;
         }
 
-        public IQueryable<TModel> GetQueryable(IQueryable<TModel> source, bool applySort = false, bool applySelectFields = false)
+        public IQueryable<TModel> GetQueryable(IQueryable<TModel> source, bool applySort = false)
         {
             var filterProperties = _query.Filter.GetType().GetCachedProperties();
 
@@ -43,9 +43,6 @@ namespace Qurl.Queryable
 
             if (applySort)
                 source = ApplySortAndPaging(source);
-
-            if (applySelectFields)
-                source = ApplySelectFields(source);
 
             return source;
         }
@@ -89,21 +86,6 @@ namespace Qurl.Queryable
                 source = source.Take(_query.Limit);
 
             return source;
-        }
-
-        public IQueryable<TModel> ApplySelectFields(IQueryable<TModel> source)
-        {
-            try
-            {
-                if (_query.Fields.Any())
-                    source = source.Select(BuildSelector(_query.Fields));
-
-                return source;
-            }
-            catch (Exception ex)
-            {
-                throw new QurlParameterFormatException("Invalid select fields", ex);
-            }
         }
 
         private static Expression<Func<TModel, bool>> GetPredicate<TProperty>(EqualsFilterProperty<TProperty> filter, QueryNameMapping nameMapping)

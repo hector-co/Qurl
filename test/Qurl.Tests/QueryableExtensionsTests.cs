@@ -147,53 +147,6 @@ namespace Qurl.Tests
         }
 
         [Fact]
-        public void TestFieldsSelection()
-        {
-            const string fieldValue = "prop1";
-            var query = new Query<SampleObjectFilter>();
-            query.Fields.Add(fieldValue);
-
-            var results = SampleOjectsCollection.AsQueryable().ApplyQuery(query, applySelectFields: true);
-            foreach (var sampleObject in results)
-            {
-                sampleObject.Prop1.Should().NotBe(default);
-                sampleObject.Prop2.Should().Be(default);
-                sampleObject.Prop3.Should().Be(default);
-                sampleObject.Prop4.Should().Be(default);
-            }
-        }
-
-        [Fact]
-        public void TestFieldsSelection2()
-        {
-            const string fieldValue = "prop1.prop1";
-            var query = new Query<SampleObjectWithRelationship>();
-            query.Fields.Add(fieldValue);
-
-            var results = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query, applySelectFields: true);
-            foreach (var sampleObject in results)
-            {
-                sampleObject.Prop1.Should().NotBe(default);
-                sampleObject.Prop1.Prop1.Should().NotBe(default);
-                sampleObject.Prop1.Prop2.Should().Be(default);
-                sampleObject.Prop1.Prop3.Should().Be(default);
-                sampleObject.Prop1.Prop4.Should().Be(default);
-            }
-        }
-
-        [Fact]
-        public void SelectingNonExistenFieldsShouldThrowException()
-        {
-            const string fieldValue = "prop1.propN";
-            var query = new Query<SampleObjectWithRelationship>();
-            query.Fields.Add(fieldValue);
-
-            Action applyQuery = () => SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query, applySelectFields: true);
-
-            applyQuery.Should().Throw<QurlParameterFormatException>();
-        }
-
-        [Fact]
         public void FallbackForNullValues()
         {
             int? prop1FilterValue = null;

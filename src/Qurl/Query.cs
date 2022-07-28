@@ -19,7 +19,6 @@ namespace Qurl
         {
             _propsNameMappings = new Dictionary<string, QueryNameMapping>(StringComparer.InvariantCultureIgnoreCase);
             Filter = new TFilter();
-            Fields = new List<string>();
             Sort = new List<SortValue>();
             InitMappings();
         }
@@ -30,7 +29,6 @@ namespace Qurl
         }
 
         public TFilter Filter { get; set; }
-        public List<string> Fields { get; set; }
         public List<SortValue> Sort { get; set; }
         public int Offset { get; set; }
         public int Limit { get; set; }

@@ -46,8 +46,7 @@ namespace Qurl
             FilterProperty,
             SortProperty,
             OffsetProperty,
-            LimitProperty,
-            FieldsProperty
+            LimitProperty
         }
 
         public static object FromQueryString(Type queryType, string queryString, FilterMode mode = FilterMode.LHS)
@@ -97,9 +96,6 @@ namespace Qurl
                         throw new QurlParameterFormatException(nameof(Query<TFilter>.Limit));
                     query.Limit = limit;
                     break;
-                case FieldType.FieldsProperty:
-                    query.Fields = values.ToString().Split(ListSeparator).ToList();
-                    break;
             }
         }
 
@@ -113,9 +109,6 @@ namespace Qurl
 
             if (key.ToUpper() == SortQueryField)
                 return FieldType.SortProperty;
-
-            if (key.ToUpper() == FieldsQueryField)
-                return FieldType.FieldsProperty;
 
             if (mode == FilterMode.LHS && (Regex.Match(key, PropNameFilterTypeRegEx).Success || Regex.Match(key, PropNameWithouyFilterTypeRegEx).Success))
                 return FieldType.FilterProperty;
