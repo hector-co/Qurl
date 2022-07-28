@@ -32,14 +32,14 @@ public class SampleDtoFilter
 }
 ```
 
-Then it is possible to create instances of this class using `QueryBuilder`:
+Then it is possible to create instances of this class using `Qurl.QueryBuilder`:
 
 ```csharp
 var queryString = "title=testTitle&active=true";
 var query = QueryBuilder.FromQueryString<Query<SampleDtoFilter>>(queryString);
 ```
 
-Every property set will be instances of a derived type at runtime. In the previous example `query.Title` and `query.Active` will be instances of `EqualsFilterProperty<>`.
+`FilterProperty<>` is an abstract class, so the concrete types for each property are resolved at runtime. In the previous example `query.Title` and `query.Active` will be instances of `EqualsFilterProperty<>`.
 
 ### Query string operators
 
