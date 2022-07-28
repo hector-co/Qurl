@@ -428,6 +428,21 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void MapInPropertyByDefaultWhenSeparatorIsPresentTest()
+        {
+            var idExpectedValues = new[] { 3, 8, 15 };
+
+            var queryString = $"id={string.Join(',', idExpectedValues)}";
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.Id.Should().NotBeNull();
+            query.Filter.Id.GetType().Should().Be(typeof(InFilterProperty<int>));
+            ((InFilterProperty<int>)query.Filter.Id).Values.Should().HaveSameCount(idExpectedValues);
+            ((InFilterProperty<int>)query.Filter.Id).Values.Should().IntersectWith(idExpectedValues);
+        }
+
+
+        [Fact]
         public void MapNotInPropertyFromUrlArrayToSpecificPropertyType()
         {
             const string queryString = "tag=val1&tag=val2&tag=val3";

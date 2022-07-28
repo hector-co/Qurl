@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
 using Qurl.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -64,7 +63,8 @@ namespace Qurl
 
             foreach (var kv in queryDictionary)
             {
-                SetQueryValue(query, kv.Key, kv.Value, mode);
+                var values = string.Join(ListSeparator.ToString(), kv.Value);
+                SetQueryValue(query, kv.Key, values, mode);
             }
 
             return query;
@@ -75,7 +75,7 @@ namespace Qurl
             return (TQuery)FromQueryString(typeof(TQuery), queryString, mode);
         }
 
-        private static void SetQueryValue<TFilter>(Query<TFilter> query, string key, StringValues values, FilterMode mode)
+        private static void SetQueryValue<TFilter>(Query<TFilter> query, string key, string values, FilterMode mode)
             where TFilter : new()
         {
             var fieldType = GetFieldType(key, mode);
@@ -147,11 +147,12 @@ namespace Qurl
             return result;
         }
 
-        private static void SetPropertyFilterValue<TFilter>(Query<TFilter> query, string key, StringValues values, FilterMode mode)
+        private static void SetPropertyFilterValue<TFilter>(Query<TFilter> query, string key, string values, FilterMode mode)
             where TFilter : new()
         {
             var properties = typeof(TFilter).GetCachedProperties();
-            var (propertyName, @operator, value) = GetPropertyNameOperatorAndValue(key, values, mode);
+            var splitedValues = SplitValues(values);
+            var (propertyName, @operator, value) = GetPropertyNameOperatorAndValue(key, values, mode, splitedValues.Count > 1);
 
             var propInfo = properties
                 .FirstOrDefault(p => p.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase));
@@ -177,21 +178,19 @@ namespace Qurl
                 propInfo.SetValue(query.Filter, filter);
         }
 
-        private static (string propertyName, string @operator, string value) GetPropertyNameOperatorAndValue(string queryKey, StringValues values, FilterMode mode)
+        private static (string propertyName, string @operator, string value) GetPropertyNameOperatorAndValue(string queryKey, string values, FilterMode mode, bool valueIsArray)
         {
-            var valueIsArray = values.Count > 1;
-
             if (mode == FilterMode.LHS)
             {
                 var matches = Regex.Match(queryKey, PropNameFilterTypeRegEx);
                 if (matches.Success)
-                    return (matches.Groups[1].Value, matches.Groups[2].Value.ToLower(), values.ToString());
+                    return (matches.Groups[1].Value, matches.Groups[2].Value.ToLower(), values);
 
                 matches = Regex.Match(queryKey, PropNameWithouyFilterTypeRegEx);
                 if (matches.Success)
-                    return (matches.Groups[1].Value, valueIsArray ? IncludeOperation : EqualsOperation, values.ToString());
+                    return (matches.Groups[1].Value, valueIsArray ? IncludeOperation : EqualsOperation, values);
 
-                return (queryKey, valueIsArray ? IncludeOperation : EqualsOperation, values.ToString());
+                return (queryKey, valueIsArray ? IncludeOperation : EqualsOperation, values);
             }
             else
             {
@@ -199,15 +198,16 @@ namespace Qurl
                 if (matches.Success)
                     queryKey = matches.Groups[1].Value;
 
-                if (valueIsArray)
-                    return (queryKey, IncludeOperation, values.ToString());
+                var separatorIndex = values.IndexOf(':');
+                
+                if (separatorIndex < 0 && valueIsArray)
+                    return (queryKey, IncludeOperation, values);
 
-                var separatorIndex = values[0].IndexOf(':');
                 if (separatorIndex < 0)
-                    return (queryKey, EqualsOperation, values.ToString());
+                    return (queryKey, EqualsOperation, values);
 
-                var @operator = values[0].Substring(0, separatorIndex);
-                var value = values[0].Substring(separatorIndex + 1);
+                var @operator = values.Substring(0, separatorIndex);
+                var value = values.Substring(separatorIndex + 1);
                 return (queryKey, @operator, value);
             }
         }
