@@ -20,6 +20,7 @@ namespace Qurl.Tests
         public string Prop2 { get; set; }
         public bool Prop3 { get; set; }
         public DateTime Prop4 { get; set; }
+        public TestEnum Prop5 { get; set; }
     }
 
     public class SampleObjectWithRelationship
@@ -49,5 +50,12 @@ namespace Qurl.Tests
         {
 
         }
+    }
+
+    public enum TestEnum
+    {
+        Value1,
+        Value2,
+        Value3
     }
 }

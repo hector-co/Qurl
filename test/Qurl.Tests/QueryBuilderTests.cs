@@ -136,6 +136,19 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void MapEqualsPropertyTestWithEnums()
+        {
+            var enumExptextedValue = TestEnum.Value1;
+
+            var queryString = $"state[eq]={enumExptextedValue}";
+            var query = (Query<TestFilter>)QueryBuilder.FromQueryString(typeof(Query<TestFilter>), queryString);
+
+            query.Filter.State.Should().NotBeNull();
+            query.Filter.State.GetType().Should().Be(typeof(EqualsFilterProperty<TestEnum>));
+            ((EqualsFilterProperty<TestEnum>)query.Filter.State).Value.Should().Be(enumExptextedValue);
+        }
+
+        [Fact]
         public void MapNotEqualsPropertyTest()
         {
             var idExpectedValue = 8;
@@ -440,7 +453,6 @@ namespace Qurl.Tests
             ((InFilterProperty<int>)query.Filter.Id).Values.Should().HaveSameCount(idExpectedValues);
             ((InFilterProperty<int>)query.Filter.Id).Values.Should().IntersectWith(idExpectedValues);
         }
-
 
         [Fact]
         public void MapNotInPropertyFromUrlArrayToSpecificPropertyType()
@@ -795,6 +807,7 @@ namespace Qurl.Tests
         public FilterProperty<int> Id { get; set; }
         public FilterProperty<string> Name { get; set; }
         public FilterProperty<bool> Active { get; set; }
+        public FilterProperty<TestEnum> State { get; set; }
 
         public NotInFilterProperty<string> Tag { get; set; }
     }
