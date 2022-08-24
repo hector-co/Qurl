@@ -10,9 +10,6 @@ namespace Qurl
         public static IQueryable<TModel> ApplyQuery<TModel, TFilterModel>(this IQueryable<TModel> source, Query<TFilterModel> query, bool applyOrderingAndPaging = false)
             where TModel : class
         {
-            var q = new Query<TFilterModel>();
-            source.ApplyQuery(q, true);
-
             var modelParameter = Expression.Parameter(typeof(TModel), "m");
 
             var filtersPredicate = GetFiltersPredicate<TModel, TFilterModel>(query, modelParameter);
