@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace Qurl.Exceptions
 {
@@ -14,10 +13,6 @@ namespace Qurl.Exceptions
         }
 
         public QurlException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected QurlException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

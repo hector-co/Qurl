@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
     <Version>0.8.0</Version>
     <Authors>Hector Carballo</Authors>
     <Company>Hco</Company>
     <Description>QueryString (LHS)</Description>
-    <Copyright>Copyright © 2021 Hector Carballo</Copyright>
+    <Copyright>Copyright © 2022 Hector Carballo</Copyright>
     <PackageProjectUrl>https://github.com/hector-co/Qurl</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hector-co/Qurl</RepositoryUrl>
     <PackageTags>QueryString LHS</PackageTags>
@@ -14,11 +15,6 @@
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE.txt">
