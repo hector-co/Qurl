@@ -39,23 +39,15 @@ namespace Qurl
             return _filters.Any(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public bool TryGetFilters<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters, bool includeCustomFiltering = false)
+        public bool TryGetFilters<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters, FilterBehavior filterBehavior = FilterBehavior.Normal)
         {
             var propName = GetPropertyName(selector);
 
             filters = _filters
-                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase) && (includeCustomFiltering || !f.CustomFiltering))
-                .Cast<FilterPropertyBase<TValue>>();
-
-            return filters.Count() > 0;
-        }
-
-        public bool TryGetCustomFiltering<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters)
-        {
-            var propName = GetPropertyName(selector);
-
-            filters = _filters
-                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase) && f.CustomFiltering)
+                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase)
+                    && (filterBehavior == FilterBehavior.Normal
+                        ? !f.CustomFiltering
+                        : filterBehavior != FilterBehavior.CustomFiltering || f.CustomFiltering))
                 .Cast<FilterPropertyBase<TValue>>();
 
             return filters.Count() > 0;
@@ -156,8 +148,7 @@ namespace Qurl
 
         private static string GetPropertyName<TValue>(Expression<Func<TFilterModel, TValue>> selector)
         {
-            var member = selector.Body as MemberExpression;
-            if (member == null)
+            if (!(selector.Body is MemberExpression member))
                 throw new QurlException();
 
             var propInfo = member.Member as PropertyInfo;
