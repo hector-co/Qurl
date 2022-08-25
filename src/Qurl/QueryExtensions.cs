@@ -7,7 +7,7 @@ namespace Qurl
 {
     public static class QueryExtensions
     {
-        public static IQueryable<TModel> ApplyQuery<TModel, TFilterModel>(this IQueryable<TModel> source, Query<TFilterModel> query, bool applyOrderingAndPaging = false)
+        public static IQueryable<TModel> ApplyQuery<TModel, TFilterModel>(this IQueryable<TModel> source, Query<TFilterModel> query, bool applyOrderingAndPaging = true)
             where TModel : class
         {
             var modelParameter = Expression.Parameter(typeof(TModel), "m");
