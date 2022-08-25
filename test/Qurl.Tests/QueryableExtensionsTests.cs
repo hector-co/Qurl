@@ -15,7 +15,7 @@ namespace Qurl.Tests
         private static readonly SampleObject SampleoObject5 = new(5, "custom", true, new DateTime(2016, 7, 7));
 
         private static readonly SampleObjectWithRelationship SampleObjectWithRelationship1 = new() { Prop1 = SampleoObject1 };
-        private static readonly SampleObjectWithRelationship? SampleObjectWithRelationship2 = new() { Prop1 = null };
+        private static readonly SampleObjectWithRelationship SampleObjectWithRelationship2 = new() { Prop1 = null };
         private static readonly SampleObjectWithRelationship SampleObjectWithRelationship3 = new() { Prop1 = SampleoObject3 };
         private static readonly SampleObjectWithRelationship SampleObjectWithRelationship4 = new() { Prop1 = SampleoObject5 };
 
@@ -146,11 +146,11 @@ namespace Qurl.Tests
 
             if (ascending)
             {
-                SampleObjectWithRelationshipsCollection.OrderBy(p => p.Prop1.Prop2).Should().BeEquivalentTo(result);
+                SampleObjectWithRelationshipsCollection.OrderBy(p => p.Prop1?.Prop2).Should().BeEquivalentTo(result);
             }
             if (!ascending)
             {
-                SampleObjectWithRelationshipsCollection.OrderByDescending(p => p.Prop1.Prop2).Should().BeEquivalentTo(result);
+                SampleObjectWithRelationshipsCollection.OrderByDescending(p => p.Prop1?.Prop2).Should().BeEquivalentTo(result);
             }
         }
 

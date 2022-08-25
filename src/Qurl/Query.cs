@@ -11,7 +11,7 @@ namespace Qurl
 {
     public class Query<TFilterModel>
     {
-        private readonly List<(PropertyInfo property, QueryOptionsAttribute attribute)> _filterModelAttrs;
+        private readonly Dictionary<PropertyInfo, IEnumerable<QueryBaseAttribute>> _filterModelAttrs;
         private readonly List<IFilterProperty> _filters;
         private readonly List<SortValue> _orderBy;
 
@@ -19,8 +19,9 @@ namespace Qurl
         {
             _filterModelAttrs = typeof(TFilterModel)
                 .GetCachedProperties()
-                .Select(p => (property: p, attribute: (QueryOptionsAttribute)Attribute.GetCustomAttribute(p, typeof(QueryOptionsAttribute))))
-                .ToList();
+                .Select(p => (property: p, attributes:
+                    Attribute.GetCustomAttributes(p, typeof(QueryBaseAttribute)).Select(a => (a as QueryBaseAttribute)!)))
+                .ToDictionary(f => f.property, f => f.attributes);
 
             _filters = new List<IFilterProperty>();
             _orderBy = new List<SortValue>();
@@ -38,37 +39,61 @@ namespace Qurl
             return _filters.Any(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public bool TryGetFilters<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters)
+        public bool TryGetFilters<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters, bool includeCustomFiltering = false)
         {
             var propName = GetPropertyName(selector);
 
             filters = _filters
-                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase))
+                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase) && (includeCustomFiltering || !f.CustomFiltering))
                 .Cast<FilterPropertyBase<TValue>>();
 
             return filters.Count() > 0;
         }
 
-        public bool TryGetCustomFilters(out IEnumerable<IFilterProperty> filters)
+        public bool TryGetCustomFiltering<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters)
         {
+            var propName = GetPropertyName(selector);
+
             filters = _filters
-                .Where(f => f.CustomFiltering);
+                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase) && f.CustomFiltering)
+                .Cast<FilterPropertyBase<TValue>>();
 
             return filters.Count() > 0;
         }
 
-        internal void AddFilter(string propertyName, Func<Type, IFilterProperty> filterFactory)
+        private (PropertyInfo? propertyInfo, IEnumerable<QueryBaseAttribute> attributes) GetPropertyAttributesWithNameMapping(string propertyName)
         {
-            var (property, attribute) = _filterModelAttrs
-                .FirstOrDefault(pa => pa.attribute != null && pa.attribute.ParamsPropertyName.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
+            foreach (var key in _filterModelAttrs.Keys)
+            {
+                if (_filterModelAttrs[key]
+                    .Any(a => a is QueryOptionsAttribute attr && attr.ParamsPropertyName.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    return (key, _filterModelAttrs[key]);
+                }
+            }
 
-            var propInfo = property ?? propertyName.GetPropertyInfo<TFilterModel>();
+            PropertyInfo? propInfo = propertyName.GetPropertyInfo<TFilterModel>();
 
             if (propInfo == null)
+                return (null, Array.Empty<QueryBaseAttribute>());
+
+            return (propInfo, _filterModelAttrs[propInfo]);
+        }
+
+        internal void AddFilter(string propertyName, Func<Type, IFilterProperty> filterFactory)
+        {
+            var (property, attributes) = GetPropertyAttributesWithNameMapping(propertyName);
+
+            if (property == null)
                 return;
 
-            var filter = filterFactory(propInfo.PropertyType);
-            filter.SetOptions(propInfo.Name, attribute?.ModelPropertyName ?? string.Empty, attribute?.CustomFiltering ?? false);
+            if (attributes.Any(a => a is QueryIgnoreAttribute))
+                return;
+
+            var optionsAttribute = (QueryOptionsAttribute?)attributes.FirstOrDefault(a => a is QueryOptionsAttribute);
+
+            var filter = filterFactory(property.PropertyType);
+            filter.SetOptions(property.Name, optionsAttribute?.ModelPropertyName ?? string.Empty, optionsAttribute?.CustomFiltering ?? false);
 
             _filters.Add(filter);
         }
@@ -82,17 +107,17 @@ namespace Qurl
 
         public void AddFilter<TValue>(string propertyName, FilterPropertyBase<TValue> filter)
         {
-            var (property, attribute) = _filterModelAttrs
-                .FirstOrDefault(pa => pa.attribute != null && pa.attribute.ParamsPropertyName.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
+            var (property, attributes) = GetPropertyAttributesWithNameMapping(propertyName);
 
-            var propInfo = property ?? propertyName.GetPropertyInfo<TFilterModel>();
-
-            if (propInfo == null)
+            if (property == null)
                 return;
 
-            filter.PropertyName = propInfo.Name;
-            filter.ModelPropertyName = attribute?.ModelPropertyName ?? string.Empty;
-            filter.CustomFiltering = attribute?.CustomFiltering ?? false;
+            if (attributes.Any(a => a is QueryIgnoreAttribute))
+                return;
+
+            var optionsAttribute = (QueryOptionsAttribute?)attributes.FirstOrDefault(a => a is QueryOptionsAttribute);
+
+            filter.SetOptions(property.Name, optionsAttribute?.ModelPropertyName ?? string.Empty, optionsAttribute?.CustomFiltering ?? false);
 
             _filters.Add(filter);
         }
@@ -106,21 +131,23 @@ namespace Qurl
 
         public void AddSort(string propertyName, bool ascending)
         {
-            var (property, attribute) = _filterModelAttrs
-                .FirstOrDefault(pa => pa.attribute != null && pa.attribute.ParamsPropertyName.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
+            var (property, attributes) = GetPropertyAttributesWithNameMapping(propertyName);
 
-            if (attribute != null && !attribute.IsSortable)
+            if (property == null)
                 return;
 
-            var propInfo = property ?? propertyName.GetPropertyInfo<TFilterModel>();
+            if (attributes.Any(a => a is QueryIgnoreAttribute))
+                return;
 
-            if (propInfo == null)
+            var optionsAttribute = (QueryOptionsAttribute?)attributes.FirstOrDefault(a => a is QueryOptionsAttribute);
+
+            if (optionsAttribute != null && !optionsAttribute.IsSortable)
                 return;
 
             var sortValue = new SortValue
             {
-                PropertyName = propInfo.Name,
-                ModelPropertyName = attribute?.ModelPropertyName ?? string.Empty,
+                PropertyName = property.Name,
+                ModelPropertyName = optionsAttribute?.ModelPropertyName ?? string.Empty,
                 Ascending = ascending
             };
 

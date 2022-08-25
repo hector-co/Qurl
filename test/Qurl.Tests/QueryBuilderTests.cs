@@ -1,6 +1,8 @@
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using Qurl.Exceptions;
 using Qurl.Filters;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -397,13 +399,12 @@ namespace Qurl.Tests
         [InlineData("null", default(string))]
         public void EqualsFilterStringPropertyTest(string value, string expectedValue)
         {
-            var builder = new QueryBuilder(new FilterFactory());
             var queryParams = new QueryParams
             {
                 Filter = $"stringProperty1 eq {value}"
             };
 
-            var query = builder.CreateQuery<TestModel1>(queryParams);
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
 
             query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
 
@@ -420,13 +421,12 @@ namespace Qurl.Tests
         [InlineData("null", default(int))]
         public void EqualsFilterIntPropertyTest(string value, int expectedValue)
         {
-            var builder = new QueryBuilder(new FilterFactory());
             var queryParams = new QueryParams
             {
                 Filter = $"intProperty1 eq {value}"
             };
 
-            var query = builder.CreateQuery<TestModel1>(queryParams);
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
 
             query.TryGetFilters(m => m.IntProperty1, out var intFilters).Should().BeTrue();
 
@@ -439,7 +439,6 @@ namespace Qurl.Tests
         [InlineData("\"null\"")]
         public void EqualsFilterIntPropertyWithInvalidValueShouldThrowAnExceptionTest(string value)
         {
-            var builder = new QueryBuilder(new FilterFactory());
             var queryParams = new QueryParams
             {
                 Filter = $"intProperty1 eq {value}"
@@ -447,10 +446,110 @@ namespace Qurl.Tests
 
             var act = () =>
             {
-                var query = builder.CreateQuery<TestModel1>(queryParams);
+                var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
             };
 
             act.Should().Throw<QurlFormatException>();
+        }
+
+        [Fact]
+        public void IgnoresPropertiesShouldNotBeIncludedAsFilters()
+        {
+            var queryParams = new QueryParams
+            {
+                Filter = "stringProperty1 eq testValue"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel2>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out _).Should().BeFalse();
+        }
+
+        [Fact]
+        public void IgnoresPropertiesShouldNotBeIncludedAsOrderBy()
+        {
+            var queryParams = new QueryParams
+            {
+                OrderBy = "stringProperty1"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel2>(queryParams);
+
+            query.OrderBy.Any(o => o.PropertyName.Equals(nameof(TestModel2.StringProperty1), StringComparison.InvariantCultureIgnoreCase))
+                .Should().BeFalse();
+        }
+
+        [Fact]
+        public void QueryOptionAttrMapParamPropertyTest()
+        {
+            var queryParams = new QueryParams
+            {
+                Filter = $"intProperty1 eq 8; string-property ne testValue"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
+
+            query.TryGetFilters(p => p.IntProperty1, out _).Should().BeTrue();
+
+            query.TryGetFilters(p => p.StringProperty1, out _).Should().BeTrue();
+        }
+
+        [Fact]
+        public void QueryOptionAttrMapModelPropertyTest()
+        {
+            var doublePropExpectedModelName = "RealDoubleProperty1";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"intProperty1 eq 8; doubleProperty1 ne 55"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
+
+            query.TryGetFilters(p => p.IntProperty1, out _).Should().BeTrue();
+
+            query.TryGetFilters(p => p.DoubleProperty1, out var doublePropFilters).Should().BeTrue();
+
+            doublePropFilters.Count().Should().Be(1);
+            doublePropFilters.First().ModelPropertyName.Should().Be(doublePropExpectedModelName);
+        }
+
+        [Fact]
+        public void QueryOptionIgnoreNotSortablePropertyTest()
+        {
+            var expectedOrderByProperty = "IntProperty1";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"intProperty1 eq 8; doubleProperty1 ne 55",
+                OrderBy = "intProperty1, dateTimeProperty1"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
+
+            query.OrderBy.Count().Should().Be(1);
+            query.OrderBy.First().PropertyName.Should().Be(expectedOrderByProperty);
+        }
+
+        [Fact]
+        public void QueryOptionHandleCustomFilterPropertyTest()
+        {
+            var queryParams = new QueryParams
+            {
+                Filter = $"intProperty1 eq 8; enumProperty1 ne value2"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
+
+            query.Filters.Count().Should().Be(2);
+
+            query.TryGetFilters(p => p.IntProperty1, out _).Should().BeTrue();
+
+            query.TryGetFilters(p => p.EnumProperty1, out _).Should().BeFalse();
+
+            query.TryGetFilters(p => p.EnumProperty1, out _, includeCustomFiltering: true).Should().BeTrue();
+
+            query.TryGetCustomFiltering(p => p.EnumProperty1, out _).Should().BeTrue();
         }
 
     }

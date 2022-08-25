@@ -31,11 +31,11 @@ namespace Qurl.Filters
 
         protected abstract Expression GetExpression(Expression property);
 
-        public void SetOptions(string propertyName, string modelPropertyName, bool isCustomFilter)
+        public void SetOptions(string propertyName, string modelPropertyName, bool customFiltering)
         {
             PropertyName = propertyName;
             ModelPropertyName = modelPropertyName;
-            CustomFiltering = isCustomFilter;
+            CustomFiltering = customFiltering;
         }
     }
 }

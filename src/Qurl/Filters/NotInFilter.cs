@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -24,7 +23,7 @@ namespace Qurl.Filters
         public override void SetValueFromString(params string?[] values)
         {
             _values.Clear();
-            _values.AddRange(values.Select(v => (TValue)TypeDescriptor.GetConverter(typeof(TValue)).ConvertFrom(v)));
+            _values.AddRange(values.Select(v => v.ConvertTo<TValue>()));
         }
 
         protected override Expression GetExpression(Expression property)

@@ -7,6 +7,6 @@
         bool CustomFiltering { get; }
         void SetValueFromString(params string?[] values);
 
-        void SetOptions(string propertyName, string modelPropertyName, bool isCustomFilter);
+        void SetOptions(string propertyName, string modelPropertyName, bool customFiltering);
     }
 }

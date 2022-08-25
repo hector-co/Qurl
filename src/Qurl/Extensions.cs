@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Qurl.Exceptions;
+using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -50,6 +52,27 @@ namespace Qurl
             Expression<Func<object>> lambdaExpression = Expression.Lambda<Func<object>>(constructorExpression);
             Func<object> createObjFunc = lambdaExpression.Compile();
             return createObjFunc();
+        }
+
+        internal static TValue ConvertTo<TValue>(this string? value)
+        {
+            if (value == null)
+                return default;
+
+            if (typeof(TValue).IsEnum)
+            {
+                if (!Enum.TryParse(typeof(TValue), value, true, out var enumValue))
+                    throw new QurlFormatException($"'{value}' is not valid for type {typeof(TValue).Name}");
+
+                return (TValue)enumValue;
+            }
+            else
+            {
+                if (!TypeDescriptor.GetConverter(typeof(TValue)).IsValid(value))
+                    throw new QurlFormatException($"'{value}' is not valid for type {typeof(TValue).Name}");
+
+                return (TValue)TypeDescriptor.GetConverter(typeof(TValue)).ConvertFrom(value);
+            }
         }
     }
 }

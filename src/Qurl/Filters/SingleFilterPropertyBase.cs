@@ -1,5 +1,4 @@
 ﻿using Qurl.Exceptions;
-using System.ComponentModel;
 
 namespace Qurl.Filters
 {
@@ -29,10 +28,7 @@ namespace Qurl.Filters
             }
             else
             {
-                if (!TypeDescriptor.GetConverter(typeof(TValue)).IsValid(values[0]))
-                    throw new QurlFormatException($"'{values[0]}' is not valid for type {typeof(TValue).Name}");
-
-                Value = (TValue)TypeDescriptor.GetConverter(typeof(TValue)).ConvertFrom(values[0]);
+                Value = values[0].ConvertTo<TValue>();
             }
         }
     }

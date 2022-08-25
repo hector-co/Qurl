@@ -30,6 +30,8 @@ namespace Qurl
 
         public void AddFilterType(string @operator, Type filterType)
         {
+            if (_filterTypes.ContainsKey(@operator))
+                throw new QurlException($"Duplicated filter operator: '{@operator}'");
             _filterTypes.Add(@operator, filterType);
         }
 
@@ -40,6 +42,9 @@ namespace Qurl
 
         public IFilterProperty Create(string @operator, Type valueType, params string?[] values)
         {
+            if (!_filterTypes.ContainsKey(@operator))
+                throw new QurlException($"Operator not found: '{@operator}'");
+
             if (@operator.Equals(ContainsFilterOp, StringComparison.InvariantCultureIgnoreCase) ||
                 @operator.Equals(StartsWithFilterOp, StringComparison.InvariantCultureIgnoreCase) ||
                 @operator.Equals(EndsWithFilterOp, StringComparison.InvariantCultureIgnoreCase))

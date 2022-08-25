@@ -1,5 +1,4 @@
 ﻿using Qurl.Exceptions;
-using System.ComponentModel;
 using System.Linq.Expressions;
 
 namespace Qurl.Filters
@@ -27,8 +26,8 @@ namespace Qurl.Filters
             if (values.Length != 2)
                 throw new QurlFormatException($"Two parameters expected");
 
-            From = (TValue)TypeDescriptor.GetConverter(typeof(TValue)).ConvertFrom(values[0]);
-            To = (TValue)TypeDescriptor.GetConverter(typeof(TValue)).ConvertFrom(values[1]);
+            From = values[0].ConvertTo<TValue>();
+            To = values[1].ConvertTo<TValue>();
         }
 
         protected override Expression GetExpression(Expression property)
