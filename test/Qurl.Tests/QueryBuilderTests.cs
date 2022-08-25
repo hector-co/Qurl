@@ -545,11 +545,11 @@ namespace Qurl.Tests
 
             query.TryGetFilters(p => p.IntProperty1, out _).Should().BeTrue();
 
-            query.TryGetFilters(p => p.EnumProperty1, out _).Should().BeFalse();
+            query.TryGetFilters(p => p.EnumProperty1, out var enumPropFilters).Should().BeTrue();
 
-            query.TryGetFilters(p => p.EnumProperty1, out _, FilterBehavior.CustomFiltering).Should().BeTrue();
+            enumPropFilters.Count().Should().Be(1);
 
-            query.TryGetFilters(p => p.EnumProperty1, out _, FilterBehavior.All).Should().BeTrue();
+            enumPropFilters.First()!.CustomFiltering.Should().BeTrue();
         }
 
     }
