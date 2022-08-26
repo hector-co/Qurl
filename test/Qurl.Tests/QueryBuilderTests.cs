@@ -604,6 +604,27 @@ namespace Qurl.Tests
             enumPropFilters.First()!.CustomFiltering.Should().BeTrue();
         }
 
+        [Fact]
+        public void HandleCusomtFilteringValuesTest()
+        {
+            var expectedEnumValue = TestEnum.Value2;
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"enumProperty1 != value2"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
+
+            query.TryGetFilters(p => p.EnumProperty1, out var enumPropFilters).Should().BeTrue();
+
+            enumPropFilters.Count().Should().Be(1);
+
+            enumPropFilters.First()!.CustomFiltering.Should().BeTrue();
+
+            enumPropFilters.First().Values.First().Should().Be(expectedEnumValue);
+        }
+
         [Theory]
         [InlineData("intProperty1 = 8")]
         [InlineData("intProperty1 == 8; stringProperty1 = test")]
@@ -631,7 +652,7 @@ namespace Qurl.Tests
         [InlineData("'te''st'", "te'st")]
         [InlineData("te st ", "te st")]
         [InlineData("'te st '", "te st ")]
-        public void T0(string paramString, string expectedString)
+        public void StringWithQuotesTest(string paramString, string expectedString)
         {
             var queryParams = new QueryParams
             {
@@ -643,6 +664,29 @@ namespace Qurl.Tests
             query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
 
             ((EqualsFilter<string>)stringFilters.First()).Value.Should().Be(expectedString);
+        }
+
+        [Fact]
+        public void MultipleFiltersPerPropertyTest()
+        {
+            var intFromExpected = 5;
+            var intToExpected = 15;
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"intProperty1 > {intFromExpected}; intProperty1 <= {intToExpected}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.IntProperty1, out var intFilters).Should().BeTrue();
+
+            intFilters.Count().Should().Be(2);
+            intFilters.ElementAt(0).GetType().Should().Be(typeof(GreaterThanFilter<int>));
+            intFilters.ElementAt(1).GetType().Should().Be(typeof(LessThanOrEqualsFilter<int>));
+            ((GreaterThanFilter<int>)intFilters.ElementAt(0)).Value.Should().Be(intFromExpected);
+            ((LessThanOrEqualsFilter<int>)intFilters.ElementAt(1)).Value.Should().Be(intToExpected);
+
         }
 
     }

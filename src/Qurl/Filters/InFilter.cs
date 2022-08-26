@@ -18,7 +18,7 @@ namespace Qurl.Filters
             _values = values.ToList();
         }
 
-        public IEnumerable<TValue> Values => _values.AsReadOnly();
+        public override IEnumerable<TValue> Values => _values.AsReadOnly();
 
         public override void SetValueFromString(params string?[] values)
         {

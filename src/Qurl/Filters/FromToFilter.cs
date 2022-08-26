@@ -1,4 +1,5 @@
 ﻿using Qurl.Exceptions;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Qurl.Filters
@@ -7,6 +8,8 @@ namespace Qurl.Filters
     {
         public TValue From { get; set; }
         public TValue To { get; set; }
+
+        public override IEnumerable<TValue> Values => new[] { From, To };
 
 #pragma warning disable CS8618
         public FromToFilter()

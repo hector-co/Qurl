@@ -1,10 +1,13 @@
 ﻿using Qurl.Exceptions;
+using System.Collections.Generic;
 
 namespace Qurl.Filters
 {
     public abstract class SingleFilterPropertyBase<TValue> : FilterPropertyBase<TValue>
     {
         public TValue Value { get; set; }
+
+        public override IEnumerable<TValue> Values => new[] { Value };
 
 #pragma warning disable CS8618
         public SingleFilterPropertyBase()

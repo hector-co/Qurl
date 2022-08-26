@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Qurl.Filters
 {
@@ -6,6 +7,8 @@ namespace Qurl.Filters
     {
         private string _modelPropertyName = string.Empty;
         public string PropertyName { get; internal set; } = string.Empty;
+        public abstract IEnumerable<TValue> Values { get; }
+
         public string ModelPropertyName
         {
             get

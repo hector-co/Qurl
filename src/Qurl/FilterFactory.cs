@@ -31,7 +31,7 @@ namespace Qurl
             AddDefaultFilterTypes();
         }
 
-        public void AddFilterType(string @operator, Type filterType)
+        internal void AddFilterType(string @operator, Type filterType)
         {
             if (!Regex.IsMatch(@operator, ValidOperatorPattern))
                 throw new QurlException("Invalid characters in operator");
@@ -90,6 +90,5 @@ namespace Qurl
             AddFilterType(InFilterOp, typeof(InFilter<>));
             AddFilterType(NotInFilterOp, typeof(NotInFilter<>));
         }
-
     }
 }
