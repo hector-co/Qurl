@@ -7,9 +7,9 @@ namespace Qurl
 {
     internal static class QueryParamsTokenizer
     {
-        const string FilterCollectionSplit = @";(?=(?:[^""]*""[^""]*"")*[^""]*$)";
-        const string FilterSplit = @"\s(?=(?:[^""]*""[^""]*"")*[^""]*$)";
-        const string CommaSeparatedValuesSplit = @",(?=(?:[^""]*""[^""]*"")*[^""]*$)";
+        const string FilterCollectionSplit = @";(?=(?:[^']*'[^']*')*[^']*$)";
+        const string FilterPattern = "^\\s*([\\w\\.\\-]+|'[\\w\\.\\s\\-]+')\\s*([^a-zA-Z0-9\\s\\;']+)\\s*(.*)$";
+        const string CommaSeparatedValuesSplit = @",(?=(?:[^']*'[^']*')*[^']*$)";
 
         public static IEnumerable<(string PropName, string Operator, IEnumerable<string?> Values)> GetFilterTokens(string filterString)
         {
@@ -23,13 +23,12 @@ namespace Qurl
 
             foreach (var filter in filtersCollection)
             {
-                var filterParams = Regex.Split(filter, FilterSplit)
-                    .Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                var filterMatch = Regex.Match(filter, FilterPattern);
 
-                if (filterParams.Length != 3)
+                if (filterMatch.Groups.Count != 4)
                     throw new QurlFormatException();
 
-                result.Add((filterParams[0], filterParams[1], SplitCommaSeparatedValues(filterParams[2])));
+                result.Add((filterMatch.Groups[1].Value, filterMatch.Groups[2].Value, SplitCommaSeparatedValues(filterMatch.Groups[3].Value)));
             }
 
             return result;
@@ -61,7 +60,7 @@ namespace Qurl
         {
             return Regex.Split(values, CommaSeparatedValuesSplit)
                 .Select(v => v.Trim())
-                .Select(v => v == "null" ? null : v.TrimStart('"').TrimEnd('"'));
+                .Select(v => v == "null" ? null : v.TrimStart('\'').TrimEnd('\'').Replace("''", "'"));
         }
     }
 }

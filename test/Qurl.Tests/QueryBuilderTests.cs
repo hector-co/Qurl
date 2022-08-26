@@ -63,7 +63,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq {expectedIntValue}; boolProperty1 eq {expectedBoolValue}"
+                Filter = $"intProperty1 == {expectedIntValue}; boolProperty1 == {expectedBoolValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -88,7 +88,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"enumProperty1 eq {exptectedEnumValue}"
+                Filter = $"enumProperty1 == {exptectedEnumValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -108,7 +108,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 ne {expectedIntValue}; boolProperty1 ne {expectedBoolValue}"
+                Filter = $"intProperty1 != {expectedIntValue}; boolProperty1 != {expectedBoolValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -134,7 +134,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 lt {expectedIntValue}; boolProperty1 lt {expectedBoolValue}"
+                Filter = $"intProperty1 < {expectedIntValue}; boolProperty1 < {expectedBoolValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -160,7 +160,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 le {expectedIntValue}; boolProperty1 le {expectedBoolValue}"
+                Filter = $"intProperty1 <= {expectedIntValue}; boolProperty1 <= {expectedBoolValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -186,7 +186,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 gt {expectedIntValue}; boolProperty1 gt {expectedBoolValue}"
+                Filter = $"intProperty1 > {expectedIntValue}; boolProperty1 > {expectedBoolValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -212,7 +212,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 ge {expectedIntValue}; boolProperty1 ge {expectedBoolValue}"
+                Filter = $"intProperty1 >= {expectedIntValue}; boolProperty1 >= {expectedBoolValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -237,7 +237,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"stringProperty1 ct {expectedStringValue}"
+                Filter = $"stringProperty1 _=_ {expectedStringValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -256,7 +256,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 ct {expectedIntValue}"
+                Filter = $"intProperty1 _=_ {expectedIntValue}"
             };
 
             var act = () =>
@@ -274,7 +274,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"stringProperty1 sw {expectedStringValue}"
+                Filter = $"stringProperty1 =_ {expectedStringValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -293,7 +293,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"stringProperty1 ew {expectedStringValue}"
+                Filter = $"stringProperty1 _= {expectedStringValue}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -313,7 +313,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 in {string.Join(',', expectedIntValues)}; stringProperty1 in {string.Join(',', expectedStringValues)}"
+                Filter = $"intProperty1 [] {string.Join(',', expectedIntValues)}; stringProperty1 [] {string.Join(',', expectedStringValues)}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -339,7 +339,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 ni {string.Join(',', expectedIntValues)}; stringProperty1 ni {string.Join(',', expectedStringValues)}"
+                Filter = $"intProperty1 ![] {string.Join(',', expectedIntValues)}; stringProperty1 ![] {string.Join(',', expectedStringValues)}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -368,7 +368,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 ft {intFromExpected},{intToExpected}; stringProperty1 ft {stringFromExpected},{stringToExpected}"
+                Filter = $"intProperty1 <-> {intFromExpected},{intToExpected}; stringProperty1 <-> {stringFromExpected},{stringToExpected}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -391,17 +391,17 @@ namespace Qurl.Tests
         [Theory]
         [InlineData("value", "value")]
         [InlineData("  value ", "value")]
-        [InlineData("\"value\"", "value")]
-        [InlineData("\"test value\"", "test value")]
-        [InlineData(" \"test value\"   ", "test value")]
-        [InlineData("\"  test value \"", "  test value ")]
-        [InlineData("\"null\"", "null")]
+        [InlineData("'value'", "value")]
+        [InlineData("'test value'", "test value")]
+        [InlineData(" 'test value'   ", "test value")]
+        [InlineData("'  test value '", "  test value ")]
+        [InlineData("'null'", "null")]
         [InlineData("null", default(string))]
         public void EqualsFilterStringPropertyTest(string value, string expectedValue)
         {
             var queryParams = new QueryParams
             {
-                Filter = $"stringProperty1 eq {value}"
+                Filter = $"stringProperty1 == {value}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -416,14 +416,14 @@ namespace Qurl.Tests
         [Theory]
         [InlineData("1", 1)]
         [InlineData("  2 ", 2)]
-        [InlineData("\"3\"", 3)]
-        [InlineData("\" 4 \"", 4)]
+        [InlineData("'3'", 3)]
+        [InlineData("' 4 '", 4)]
         [InlineData("null", default(int))]
         public void EqualsFilterIntPropertyTest(string value, int expectedValue)
         {
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq {value}"
+                Filter = $"intProperty1 == {value}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -436,12 +436,12 @@ namespace Qurl.Tests
         }
 
         [Theory]
-        [InlineData("\"null\"")]
+        [InlineData("'null'")]
         public void EqualsFilterIntPropertyWithInvalidValueShouldThrowAnExceptionTest(string value)
         {
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq {value}"
+                Filter = $"intProperty1 == {value}"
             };
 
             var act = () =>
@@ -457,7 +457,7 @@ namespace Qurl.Tests
         {
             var queryParams = new QueryParams
             {
-                Filter = "stringProperty1 eq testValue"
+                Filter = "stringProperty1 == testValue"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel2>(queryParams);
@@ -484,7 +484,7 @@ namespace Qurl.Tests
         {
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq 8; string-property ne testValue"
+                Filter = $"intProperty1 == 8; string-property != testValue"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
@@ -501,7 +501,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq 8; doubleProperty1 ne 55"
+                Filter = $"intProperty1 == 8; doubleProperty1 != 55"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
@@ -521,7 +521,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq 8; doubleProperty1 ne 55",
+                Filter = $"intProperty1 == 8; doubleProperty1 != 55",
                 OrderBy = "intProperty1, dateTimeProperty1"
             };
 
@@ -536,7 +536,7 @@ namespace Qurl.Tests
         {
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 eq 8; enumProperty1 ne value2"
+                Filter = $"intProperty1 == 8; enumProperty1 != value2"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);

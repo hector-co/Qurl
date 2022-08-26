@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Qurl.Exceptions;
 using Qurl.Filters;
 
@@ -7,18 +8,20 @@ namespace Qurl
 {
     public class FilterFactory
     {
-        public const string EqualsFilterOp = "EQ";
-        public const string NotEqualsFilterOp = "NE";
-        public const string LessThanFilterOp = "LT";
-        public const string LessThanOrEqualsFilterOp = "LE";
-        public const string GreaterThanFilterOp = "GT";
-        public const string GreaterThanOrEqualsFilterOp = "GE";
-        public const string ContainsFilterOp = "CT";
-        public const string StartsWithFilterOp = "SW";
-        public const string EndsWithFilterOp = "EW";
-        public const string FromToFilterOp = "FT";
-        public const string InFilterOp = "IN";
-        public const string NotInFilterOp = "NI";
+        public const string EqualsFilterOp = "==";
+        public const string NotEqualsFilterOp = "!=";
+        public const string LessThanFilterOp = "<";
+        public const string LessThanOrEqualsFilterOp = "<=";
+        public const string GreaterThanFilterOp = ">";
+        public const string GreaterThanOrEqualsFilterOp = ">=";
+        public const string ContainsFilterOp = "_=_";
+        public const string StartsWithFilterOp = "=_";
+        public const string EndsWithFilterOp = "_=";
+        public const string FromToFilterOp = "<->";
+        public const string InFilterOp = "[]";
+        public const string NotInFilterOp = "![]";
+
+        public const string ValidOperatorPattern = "^[^a-zA-Z0-9\\s\\;']+$";
 
         private readonly Dictionary<string, Type> _filterTypes;
 
@@ -30,6 +33,9 @@ namespace Qurl
 
         public void AddFilterType(string @operator, Type filterType)
         {
+            if (!Regex.IsMatch(@operator, ValidOperatorPattern))
+                throw new QurlException("Invalid characters in operator");
+
             if (_filterTypes.ContainsKey(@operator))
                 throw new QurlException($"Duplicated filter operator: '{@operator}'");
             _filterTypes.Add(@operator, filterType);
