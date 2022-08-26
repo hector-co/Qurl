@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl", "src\Qurl\Qurl.cspro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qurl.Tests", "test\Qurl.Tests\Qurl.Tests.csproj", "{6E39A5C9-38CC-428D-83F9-2DA57B586741}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qurl.AspNetCore", "src\Qurl.AspNetCore\Qurl.AspNetCore.csproj", "{29F4ADEA-AFB0-4914-B9F6-9CF6B23BDB3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6E39A5C9-38CC-428D-83F9-2DA57B586741}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E39A5C9-38CC-428D-83F9-2DA57B586741}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E39A5C9-38CC-428D-83F9-2DA57B586741}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29F4ADEA-AFB0-4914-B9F6-9CF6B23BDB3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29F4ADEA-AFB0-4914-B9F6-9CF6B23BDB3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29F4ADEA-AFB0-4914-B9F6-9CF6B23BDB3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29F4ADEA-AFB0-4914-B9F6-9CF6B23BDB3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{38DF8D5E-3E21-48B0-957D-37A30F14E779} = {4CA0291D-5CF9-4E8D-8BE7-9BC248A9F763}
 		{1479D66F-5D28-4BF8-B562-A63D6B55B2DE} = {CA74F929-2B50-4D3B-B31C-8F06CF682226}
 		{6E39A5C9-38CC-428D-83F9-2DA57B586741} = {AE3C519F-7B17-4870-B73B-E153A54FA4CE}
+		{29F4ADEA-AFB0-4914-B9F6-9CF6B23BDB3F} = {CA74F929-2B50-4D3B-B31C-8F06CF682226}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D8E5306-9005-4343-B536-75CB72062A98}
