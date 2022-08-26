@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Qurl.Samples.AspNetCore.Models;
 
 namespace Qurl.Samples.AspNetCore.Controllers
 {
@@ -14,7 +13,7 @@ namespace Qurl.Samples.AspNetCore.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery]GroupQuery query)
+        public IActionResult Get([FromQuery]QueryParams query)
         {
             return Ok();
         }

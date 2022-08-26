@@ -22,6 +22,7 @@ namespace Qurl
             var query = new TQuery();
 
             var filterTokens = QueryParamsTokenizer.GetFilterTokens(queryParams.Filter);
+            //todo verify operators exists or throw exception
             foreach (var (propName, @operator, values) in filterTokens)
             {
                 query.AddFilter(propName, (t) => _filterFactory.Create(@operator, t, values.ToArray()));

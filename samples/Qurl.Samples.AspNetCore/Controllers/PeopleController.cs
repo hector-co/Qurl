@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Qurl.Queryable;
 using Qurl.Samples.AspNetCore.Models;
-using System.Linq;
 
 namespace Qurl.Samples.AspNetCore.Controllers
 {
@@ -11,24 +9,26 @@ namespace Qurl.Samples.AspNetCore.Controllers
     public class PeopleController : Controller
     {
         private readonly SampleContext _context;
+        private readonly QueryBuilder _queryBuilder;
 
-        public PeopleController(SampleContext context)
+        public PeopleController(SampleContext context, QueryBuilder queryBuilder)
         {
             _context = context;
+            _queryBuilder = queryBuilder;
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id, System.Threading.CancellationToken cancellationToken)
+        public IActionResult Get(int id)
         {
             var result = _context.Set<Person>().Include(p => p.Group).FirstOrDefault(p => p.Id == id);
             return Ok(result);
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery] Query<PersonFilter> query)
+        public IActionResult Get([FromQuery] QueryParams queryParams)
         {
+            var query = _queryBuilder.CreateQuery<Person>(queryParams);
             var queryable = _context.Set<Person>().Include(p => p.Group).ApplyQuery(query);
-            queryable = queryable.ApplySortAndPaging(query);
             var result = queryable.ToList();
             return Ok(result);
         }

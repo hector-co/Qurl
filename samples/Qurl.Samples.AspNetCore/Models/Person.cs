@@ -1,23 +1,11 @@
-﻿using Qurl;
-using System;
-
-namespace Qurl.Samples.AspNetCore.Models
+﻿namespace Qurl.Samples.AspNetCore.Models
 {
     public class Person
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public DateTime Birthday { get; set; }
-        public Group Group { get; set; }
+        public Group Group { get; set; } = new Group();
         public bool Active { get; set; }
-    }
-
-    public class PersonFilter
-    {
-        public FilterProperty<int> Id { get; set; }
-        public FilterProperty<string> Name { get; set; }
-        public RangeFilterProperty<DateTime> Birthday { get; set; }
-        public FilterProperty<int> GroupId { get; set; }
-        public EqualsFilterProperty<bool> Active { get; set; }
     }
 }
