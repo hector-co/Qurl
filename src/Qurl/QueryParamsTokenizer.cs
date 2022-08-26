@@ -8,7 +8,7 @@ namespace Qurl
     internal static class QueryParamsTokenizer
     {
         const string FilterCollectionSplit = @";(?=(?:[^']*'[^']*')*[^']*$)";
-        const string FilterPattern = "^\\s*([\\w\\.\\-]+|'[\\w\\.\\s\\-]+')\\s*([^a-zA-Z0-9\\s\\;']+)\\s*(.*)$";
+        const string FilterPattern = "^\\s*([\\w\\.\\-]+|'[\\w\\.\\s\\-]+')\\s*([^a-zA-Z0-9\\s\\;']+)\\s*('(?:''|[^'])*'\\s*|(?!.*').*)$";
         const string CommaSeparatedValuesSplit = @",(?=(?:[^']*'[^']*')*[^']*$)";
 
         public static IEnumerable<(string PropName, string Operator, IEnumerable<string?> Values)> GetFilterTokens(string filterString)

@@ -49,14 +49,14 @@ namespace Qurl
         public IFilterProperty Create(string @operator, Type valueType, params string?[] values)
         {
             if (!_filterTypes.ContainsKey(@operator))
-                throw new QurlException($"Operator not found: '{@operator}'");
+                throw new QurlFormatException($"Operator not found: '{@operator}'");
 
             if (@operator.Equals(ContainsFilterOp, StringComparison.InvariantCultureIgnoreCase) ||
                 @operator.Equals(StartsWithFilterOp, StringComparison.InvariantCultureIgnoreCase) ||
                 @operator.Equals(EndsWithFilterOp, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (valueType != typeof(string))
-                    throw new QurlException($"'{@operator}' only supports string type.");
+                    throw new QurlFormatException($"'{@operator}' only supports string type.");
             }
 
             if (@operator == EqualsFilterOp && values.Length > 1)

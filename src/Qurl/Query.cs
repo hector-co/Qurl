@@ -32,13 +32,6 @@ namespace Qurl
         public int Offset { get; set; }
         public int Limit { get; set; }
 
-        public bool IsSet<TValue>(Expression<Func<TFilterModel, TValue>> selector)
-        {
-            var propName = GetPropertyName(selector);
-
-            return _filters.Any(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase));
-        }
-
         public bool TryGetFilters<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters)
         {
             var propName = GetPropertyName(selector);

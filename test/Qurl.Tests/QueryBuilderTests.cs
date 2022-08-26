@@ -536,7 +536,7 @@ namespace Qurl.Tests
         {
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 == 8; string-property != testValue"
+                Filter = "intProperty1 == 8; string-property != testValue"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
@@ -553,7 +553,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 == 8; doubleProperty1 != 55"
+                Filter = "intProperty1 == 8; doubleProperty1 != 55"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
@@ -573,7 +573,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 == 8; doubleProperty1 != 55",
+                Filter = "intProperty1 == 8; doubleProperty1 != 55",
                 OrderBy = "intProperty1, dateTimeProperty1"
             };
 
@@ -588,7 +588,7 @@ namespace Qurl.Tests
         {
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 == 8; enumProperty1 != value2"
+                Filter = "intProperty1 == 8; enumProperty1 != value2"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
@@ -602,6 +602,47 @@ namespace Qurl.Tests
             enumPropFilters.Count().Should().Be(1);
 
             enumPropFilters.First()!.CustomFiltering.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("intProperty1 = 8")]
+        [InlineData("intProperty1 == 8; stringProperty1 = test")]
+        [InlineData("stringProperty1")]
+        [InlineData("enumProperty1 == 1 stringProperty1 = test")]
+        [InlineData("stringProperty1 == 'te'st'")]
+        [InlineData("stringProperty1 == ''test'")]
+        public void FilterWithInvalidFormatShouldThrowException(string invalidFilters)
+        {
+            var queryParams = new QueryParams
+            {
+                Filter = invalidFilters
+            };
+
+            var act = () =>
+            {
+                var query = _queryBuilder.CreateQuery<TestModel3>(queryParams);
+            };
+
+            act.Should().Throw<QurlFormatException>();
+        }
+
+        [Theory]
+        [InlineData("'test'", "test")]
+        [InlineData("'te''st'", "te'st")]
+        [InlineData("te st ", "te st")]
+        [InlineData("'te st '", "te st ")]
+        public void T0(string paramString, string expectedString)
+        {
+            var queryParams = new QueryParams
+            {
+                Filter = $"stringProperty1 == {paramString}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
+
+            ((EqualsFilter<string>)stringFilters.First()).Value.Should().Be(expectedString);
         }
 
     }
