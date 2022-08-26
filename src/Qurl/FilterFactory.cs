@@ -59,6 +59,11 @@ namespace Qurl
                     throw new QurlException($"'{@operator}' only supports string type.");
             }
 
+            if (@operator == EqualsFilterOp && values.Length > 1)
+                @operator = InFilterOp;
+            if (@operator == NotEqualsFilterOp && values.Length > 1)
+                @operator = NotInFilterOp;
+
             var filterType = _filterTypes[@operator];
             var completeFilterType = filterType.IsGenericType
                 ? filterType.MakeGenericType(valueType)
