@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Qurl.Exceptions;
 using Qurl.Filters;
@@ -9,19 +10,30 @@ namespace Qurl
     public class FilterFactory
     {
         public const string EqualsFilterOp = "==";
+        public const string CiEqualsFilterOp = "==*";
         public const string NotEqualsFilterOp = "!=";
+        public const string CiNotEqualsFilterOp = "!=*";
         public const string LessThanFilterOp = "<";
         public const string LessThanOrEqualsFilterOp = "<=";
         public const string GreaterThanFilterOp = ">";
         public const string GreaterThanOrEqualsFilterOp = ">=";
         public const string ContainsFilterOp = "_=_";
+        public const string CiContainsFilterOp = "_=_*";
         public const string StartsWithFilterOp = "=_";
+        public const string CiStartsWithFilterOp = "=_*";
         public const string EndsWithFilterOp = "_=";
+        public const string CiEndsWithFilterOp = "_=*";
         public const string FromToFilterOp = "<->";
         public const string InFilterOp = "[]";
         public const string NotInFilterOp = "![]";
 
         public const string ValidOperatorPattern = "^[^a-zA-Z0-9\\s\\;']+$";
+
+        private readonly IEnumerable<string> StringOperators = new[]
+        {
+            CiEqualsFilterOp, CiNotEqualsFilterOp, ContainsFilterOp, CiContainsFilterOp,
+            StartsWithFilterOp, CiStartsWithFilterOp, EndsWithFilterOp, CiEndsWithFilterOp
+        };
 
         private readonly QueryHelper _queryHelper;
         private readonly Dictionary<string, Type> _filterTypes;
@@ -55,13 +67,8 @@ namespace Qurl
             if (!_filterTypes.ContainsKey(@operator))
                 throw new QurlFormatException($"Operator not found: '{@operator}'");
 
-            if (@operator.Equals(ContainsFilterOp, StringComparison.InvariantCultureIgnoreCase) ||
-                @operator.Equals(StartsWithFilterOp, StringComparison.InvariantCultureIgnoreCase) ||
-                @operator.Equals(EndsWithFilterOp, StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (valueType != typeof(string))
-                    throw new QurlFormatException($"'{@operator}' only supports string type.");
-            }
+            if (valueType != typeof(string) && StringOperators.Contains(@operator))
+                throw new QurlFormatException($"'{@operator}' only supports string type.");
 
             if (@operator == EqualsFilterOp && values.Length > 1)
                 @operator = InFilterOp;
@@ -84,7 +91,7 @@ namespace Qurl
                 if (valueType == typeof(DateTime))
                     converted = _queryHelper.ConvertDateTime((DateTime)converted!);
 
-                if ( valueType == typeof(DateTimeOffset))
+                if (valueType == typeof(DateTimeOffset))
                     converted = _queryHelper.ConvertDateTimeOffset((DateTimeOffset)converted!);
 
                 convertedValues.Add(converted);
@@ -97,14 +104,19 @@ namespace Qurl
         private void AddDefaultFilterTypes()
         {
             AddFilterType(EqualsFilterOp, typeof(EqualsFilter<>));
+            AddFilterType(CiEqualsFilterOp, typeof(CiEqualsFilter));
             AddFilterType(NotEqualsFilterOp, typeof(NotEqualsFilter<>));
+            AddFilterType(CiNotEqualsFilterOp, typeof(CiNotEqualsFilter));
             AddFilterType(LessThanFilterOp, typeof(LessThanFilter<>));
             AddFilterType(LessThanOrEqualsFilterOp, typeof(LessThanOrEqualsFilter<>));
             AddFilterType(GreaterThanFilterOp, typeof(GreaterThanFilter<>));
             AddFilterType(GreaterThanOrEqualsFilterOp, typeof(GreaterThanOrEqualsFilter<>));
             AddFilterType(ContainsFilterOp, typeof(ContainsFilter));
+            AddFilterType(CiContainsFilterOp, typeof(CiContainsFilter));
             AddFilterType(StartsWithFilterOp, typeof(StartsWithFilter));
+            AddFilterType(CiStartsWithFilterOp, typeof(CiStartsWithFilter));
             AddFilterType(EndsWithFilterOp, typeof(EndsWithFilter));
+            AddFilterType(CiEndsWithFilterOp, typeof(CiEndsWithFilter));
             AddFilterType(FromToFilterOp, typeof(FromToFilter<>));
             AddFilterType(InFilterOp, typeof(InFilter<>));
             AddFilterType(NotInFilterOp, typeof(NotInFilter<>));

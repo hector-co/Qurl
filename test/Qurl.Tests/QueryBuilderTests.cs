@@ -119,6 +119,25 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void CiEqualsFilterTest()
+        {
+            var exptectedStringValue = "testValue";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"stringProperty1 ==* {exptectedStringValue}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
+
+            stringFilters.Count().Should().Be(1);
+            stringFilters.ElementAt(0).GetType().Should().Be(typeof(CiEqualsFilter));
+            ((CiEqualsFilter)stringFilters.ElementAt(0)).Value.Should().Be(exptectedStringValue);
+        }
+
+        [Fact]
         public void NotEqualsFilterTest()
         {
             var expectedIntValue = 8;
@@ -142,6 +161,25 @@ namespace Qurl.Tests
             boolFilters.Count().Should().Be(1);
             boolFilters.ElementAt(0).GetType().Should().Be(typeof(NotEqualsFilter<bool>));
             ((NotEqualsFilter<bool>)boolFilters.ElementAt(0)).Value.Should().Be(expectedBoolValue);
+        }
+
+        [Fact]
+        public void CiNotEqualsFilterTest()
+        {
+            var exptectedStringValue = "testValue";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"stringProperty1 !=* {exptectedStringValue}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
+
+            stringFilters.Count().Should().Be(1);
+            stringFilters.ElementAt(0).GetType().Should().Be(typeof(CiNotEqualsFilter));
+            ((CiNotEqualsFilter)stringFilters.ElementAt(0)).Value.Should().Be(exptectedStringValue);
         }
 
         [Fact]
@@ -268,6 +306,25 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void CiContainsFilterTest()
+        {
+            var expectedStringValue = "test-string";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"stringProperty1 _=_* {expectedStringValue}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
+
+            stringFilters.Count().Should().Be(1);
+            stringFilters.ElementAt(0).GetType().Should().Be(typeof(CiContainsFilter));
+            ((CiContainsFilter)stringFilters.ElementAt(0)).Value.Should().Be(expectedStringValue);
+        }
+
+        [Fact]
         public void ApplyContainsFilterToNonStringTypeShouldThrowAndExceptionTest()
         {
             var expectedIntValue = 8;
@@ -305,6 +362,25 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void CiStartsWithFilterTest()
+        {
+            var expectedStringValue = "test-string";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"stringProperty1 =_* {expectedStringValue}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
+
+            stringFilters.Count().Should().Be(1);
+            stringFilters.ElementAt(0).GetType().Should().Be(typeof(CiStartsWithFilter));
+            ((CiStartsWithFilter)stringFilters.ElementAt(0)).Value.Should().Be(expectedStringValue);
+        }
+
+        [Fact]
         public void EndsWithFilterTest()
         {
             var expectedStringValue = "test-string";
@@ -321,6 +397,25 @@ namespace Qurl.Tests
             stringFilters.Count().Should().Be(1);
             stringFilters.ElementAt(0).GetType().Should().Be(typeof(EndsWithFilter));
             ((EndsWithFilter)stringFilters.ElementAt(0)).Value.Should().Be(expectedStringValue);
+        }
+
+        [Fact]
+        public void CiEndsWithFilterTest()
+        {
+            var expectedStringValue = "test-string";
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"stringProperty1 _=* {expectedStringValue}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
+
+            stringFilters.Count().Should().Be(1);
+            stringFilters.ElementAt(0).GetType().Should().Be(typeof(CiEndsWithFilter));
+            ((CiEndsWithFilter)stringFilters.ElementAt(0)).Value.Should().Be(expectedStringValue);
         }
 
         [Fact]
