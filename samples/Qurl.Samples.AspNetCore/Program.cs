@@ -13,12 +13,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<SampleContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("SampleAspNetCore"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("QurlSample"))
 );
 
 builder.Services.AddHostedService<InitDbContext>();
 
-builder.Services.AddQurl();
+builder.Services.AddQurl(o =>
+{
+    o.SetDateTimeConverter((dateTime) => dateTime.ToUniversalTime());
+    o.SetDateTimeOffsetConverter((dateTime) => dateTime.ToUniversalTime());
+});
 
 var app = builder.Build();
 

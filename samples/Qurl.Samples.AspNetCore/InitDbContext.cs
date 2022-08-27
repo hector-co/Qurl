@@ -25,13 +25,12 @@
                 var context = scope.ServiceProvider.GetRequiredService<SampleContext>();
 
                 await context.Database.MigrateAsync(cancellationToken);
-
                 if (!await context.Set<Person>().AnyAsync(cancellationToken))
                 {
                     context.AddRange(new Person
                     {
                         Name = "Person1",
-                        Birthday = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
+                        Birthday = new DateTime(2020, 1, 10).ToUniversalTime(),
                         Group = new Group
                         {
                             Title = "Group1",
@@ -39,11 +38,12 @@
                             Active = true,
                         },
                         Active = true,
+                        CreationDate = DateTime.UtcNow
                     },
                     new Person
                     {
                         Name = "Person2",
-                        Birthday = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
+                        Birthday = new DateTime(2021, 2, 20).ToUniversalTime(),
                         Group = new Group
                         {
                             Title = "Group2",
@@ -51,11 +51,13 @@
                             Active = true,
                         },
                         Active = true,
+                        CreationDate = DateTime.UtcNow
                     },
                     new Person
                     {
                         Name = "Person3",
-                        Birthday = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
+                        Birthday = new DateTime(2022, 3, 30).ToUniversalTime(),
+                        CreationDate = DateTime.UtcNow
                     });
 
                     await context.SaveChangesAsync(cancellationToken);

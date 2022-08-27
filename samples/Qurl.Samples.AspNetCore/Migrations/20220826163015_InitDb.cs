@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Qurl.Samples.AspNetCore.Migrations
 {
-    public partial class InitialDb : Migration
+    public partial class InitDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,7 +34,8 @@ namespace Qurl.Samples.AspNetCore.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Birthday = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     GroupId = table.Column<int>(type: "integer", nullable: false),
-                    Active = table.Column<bool>(type: "boolean", nullable: false)
+                    Active = table.Column<bool>(type: "boolean", nullable: false),
+                    CreationDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

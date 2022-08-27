@@ -12,8 +12,8 @@ using Qurl.Samples.AspNetCore.Models;
 namespace Qurl.Samples.AspNetCore.Migrations
 {
     [DbContext(typeof(SampleContext))]
-    [Migration("20220826035816_InitialDb")]
-    partial class InitialDb
+    [Migration("20220826163015_InitDb")]
+    partial class InitDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,6 +60,9 @@ namespace Qurl.Samples.AspNetCore.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("Birthday")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("GroupId")

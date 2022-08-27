@@ -27,9 +27,9 @@ namespace Qurl.Samples.AspNetCore.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] QueryParams queryParams)
         {
-            var query = _queryBuilder.CreateQuery<Person>(queryParams);
-            var queryable = _context.Set<Person>().Include(p => p.Group).ApplyQuery(query);
-            var result = queryable.ToList();
+            var query = _queryBuilder.CreateQuery<PersonFilter>(queryParams);
+            var result = _context.Set<Person>().Include(p => p.Group)
+                .ApplyQuery(query).ToList();
             return Ok(result);
         }
     }
