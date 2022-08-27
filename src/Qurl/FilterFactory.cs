@@ -23,13 +23,17 @@ namespace Qurl
 
         public const string ValidOperatorPattern = "^[^a-zA-Z0-9\\s\\;']+$";
 
+        private readonly QueryHelper _queryHelper;
         private readonly Dictionary<string, Type> _filterTypes;
 
-        public FilterFactory()
+        public FilterFactory(QueryHelper queryHelper)
         {
+            _queryHelper = queryHelper;
             _filterTypes = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
             AddDefaultFilterTypes();
         }
+
+        public IEnumerable<string> Operators => _filterTypes.Keys;
 
         internal void AddFilterType(string @operator, Type filterType)
         {
@@ -70,7 +74,22 @@ namespace Qurl
                 : filterType;
 
             var filter = (IFilterProperty)completeFilterType.CreateInstance();
-            filter.SetValueFromString(values);
+
+            var convertedValues = new List<object?>();
+            foreach (var value in values)
+            {
+                if (!value.TryConvertTo(valueType, out var converted))
+                    throw new QurlFormatException($"'{value}' is not valid for type {valueType.Name}");
+
+                if (valueType == typeof(DateTime))
+                    converted = _queryHelper.ConvertDateTime((DateTime)converted!);
+
+                if ( valueType == typeof(DateTimeOffset))
+                    converted = _queryHelper.ConvertDateTimeOffset((DateTimeOffset)converted!);
+
+                convertedValues.Add(converted);
+            }
+            filter.SetValues(convertedValues.ToArray());
 
             return filter;
         }

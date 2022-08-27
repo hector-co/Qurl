@@ -20,10 +20,10 @@ namespace Qurl.Filters
 
         public override IEnumerable<TValue> Values => _values.AsReadOnly();
 
-        public override void SetValueFromString(params string?[] values)
+        public override void SetValues(params object?[] values)
         {
             _values.Clear();
-            _values.AddRange(values.Select(v => v.ConvertTo<TValue>()));
+            _values.AddRange(values.Select(v => (TValue)v));
         }
 
         protected override Expression GetExpression(Expression property)

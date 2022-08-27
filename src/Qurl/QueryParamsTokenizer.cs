@@ -28,7 +28,7 @@ namespace Qurl
                 if (filterMatch.Groups.Count != 4)
                     throw new QurlFormatException();
 
-                result.Add((filterMatch.Groups[1].Value, filterMatch.Groups[2].Value, SplitCommaSeparatedValues(filterMatch.Groups[3].Value)));
+                result.Add((filterMatch.Groups[1].Value.TrimStart('\'').TrimEnd('\''), filterMatch.Groups[2].Value, SplitCommaSeparatedValues(filterMatch.Groups[3].Value)));
             }
 
             return result;

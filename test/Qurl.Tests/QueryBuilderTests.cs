@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using Qurl.Exceptions;
 using Qurl.Filters;
 using System;
@@ -15,7 +14,7 @@ namespace Qurl.Tests
 
         public QueryBuilderTests()
         {
-            _filterFactory = new FilterFactory();
+            _filterFactory = new FilterFactory(new QueryHelper());
             _queryBuilder = new QueryBuilder(_filterFactory);
 
         }
@@ -79,6 +78,25 @@ namespace Qurl.Tests
             boolFilters.Count().Should().Be(1);
             boolFilters.ElementAt(0).GetType().Should().Be(typeof(EqualsFilter<bool>));
             ((EqualsFilter<bool>)boolFilters.ElementAt(0)).Value.Should().Be(expectedBoolValue);
+        }
+
+        [Fact]
+        public void EqualsFilterDateTimeTest()
+        {
+            var expectedDateTimeValue = new DateTime(2022, 1, 1);
+
+            var queryParams = new QueryParams
+            {
+                Filter = $"dateTimeProperty1 == {expectedDateTimeValue}"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.DateTimeProperty1, out var dateTimeFilters).Should().BeTrue();
+
+            dateTimeFilters.Count().Should().Be(1);
+            dateTimeFilters.ElementAt(0).GetType().Should().Be(typeof(EqualsFilter<DateTime>));
+            ((EqualsFilter<DateTime>)dateTimeFilters.ElementAt(0)).Value.Should().Be(expectedDateTimeValue);
         }
 
         [Fact]
@@ -664,6 +682,19 @@ namespace Qurl.Tests
             query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
 
             ((EqualsFilter<string>)stringFilters.First()).Value.Should().Be(expectedString);
+        }
+
+        [Fact]
+        public void PropertyWithQuotesTest()
+        {
+            var queryParams = new QueryParams
+            {
+                Filter = $"'stringProperty1' == testvalue"
+            };
+
+            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
+
+            query.TryGetFilters(m => m.StringProperty1, out _).Should().BeTrue();
         }
 
         [Fact]

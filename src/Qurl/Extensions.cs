@@ -54,24 +54,28 @@ namespace Qurl
             return createObjFunc();
         }
 
-        internal static TValue ConvertTo<TValue>(this string? value)
+        internal static bool TryConvertTo(this string? value, Type targetType, out object? converted)
         {
+            converted = null;
+
             if (value == null)
-                return default;
+                return true;
 
-            if (typeof(TValue).IsEnum)
+            if (targetType.IsEnum)
             {
-                if (!Enum.TryParse(typeof(TValue), value, true, out var enumValue))
-                    throw new QurlFormatException($"'{value}' is not valid for type {typeof(TValue).Name}");
+                if (!Enum.TryParse(targetType, value, true, out var enumValue))
+                    return false;
 
-                return (TValue)enumValue;
+                converted = enumValue;
+                return true;
             }
             else
             {
-                if (!TypeDescriptor.GetConverter(typeof(TValue)).IsValid(value))
-                    throw new QurlFormatException($"'{value}' is not valid for type {typeof(TValue).Name}");
+                if (!TypeDescriptor.GetConverter(targetType).IsValid(value))
+                    return false;
 
-                return (TValue)TypeDescriptor.GetConverter(typeof(TValue)).ConvertFrom(value);
+                converted = TypeDescriptor.GetConverter(targetType).ConvertFrom(value);
+                return true;
             }
         }
     }

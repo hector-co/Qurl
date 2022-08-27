@@ -20,7 +20,7 @@ namespace Qurl.Filters
             Value = value;
         }
 
-        public override void SetValueFromString(params string?[] values)
+        public override void SetValues(params object?[] values)
         {
             if (values.Length != 1)
                 throw new QurlFormatException($"One parameters expected");
@@ -31,7 +31,7 @@ namespace Qurl.Filters
             }
             else
             {
-                Value = values[0].ConvertTo<TValue>();
+                Value = (TValue)values[0];
             }
         }
     }

@@ -21,7 +21,7 @@ namespace Qurl.Filters
         }
         public bool CustomFiltering { get; internal set; }
 
-        public abstract void SetValueFromString(params string?[] values);
+        public abstract void SetValues(params object?[] values);
 
         public virtual Expression? GetFilterExpression<TModel>(ParameterExpression modelParameter)
         {

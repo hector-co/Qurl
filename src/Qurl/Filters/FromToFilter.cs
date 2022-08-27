@@ -1,5 +1,6 @@
 ﻿using Qurl.Exceptions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Qurl.Filters
@@ -24,13 +25,13 @@ namespace Qurl.Filters
             To = to;
         }
 
-        public override void SetValueFromString(params string?[] values)
+        public override void SetValues(params object?[] values)
         {
             if (values.Length != 2)
                 throw new QurlFormatException($"Two parameters expected");
 
-            From = values[0].ConvertTo<TValue>();
-            To = values[1].ConvertTo<TValue>();
+            From = (TValue)values[0];
+            To = (TValue)values[1];
         }
 
         protected override Expression GetExpression(Expression property)

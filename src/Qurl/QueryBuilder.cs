@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using Qurl.Exceptions;
+using System;
+using System.Linq;
 
 namespace Qurl
 {
@@ -22,9 +24,12 @@ namespace Qurl
             var query = new TQuery();
 
             var filterTokens = QueryParamsTokenizer.GetFilterTokens(queryParams.Filter);
-            //todo verify operators exists or throw exception
+
             foreach (var (propName, @operator, values) in filterTokens)
             {
+                if (!_filterFactory.Operators.Any(o => o.Equals(@operator, StringComparison.InvariantCultureIgnoreCase)))
+                    throw new QurlFormatException($"Operator not found: '{@operator}'");
+
                 query.AddFilter(propName, (t) => _filterFactory.Create(@operator, t, values.ToArray()));
             }
 
