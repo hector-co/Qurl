@@ -40,25 +40,23 @@ namespace Qurl
         {
             var propertyInfo = selector.GetPropertyInfo();
 
-            AddFilter(propertyInfo.GetPropertyAttrInfo<TFilterModel>(), filter);
+            if (propertyInfo.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
+            {
+                AddFilter(queryAttributeInfo!, filter);
+            }
         }
 
         internal void AddFilter(string propertyName, Func<Type, IFilterProperty> filterFactory)
         {
-            var queryAttributeInfo = propertyName.GetPropertyAttrInfo<TFilterModel>();
-
-            if (queryAttributeInfo == null)
-                return;
-
-            AddFilter(queryAttributeInfo, filterFactory(queryAttributeInfo.PropertyInfo!.PropertyType));
+            if (propertyName.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
+            {
+                AddFilter(queryAttributeInfo!, filterFactory(queryAttributeInfo!.PropertyInfo.PropertyType));
+            }
         }
 
-        private void AddFilter(QueryAttributeInfo? queryAttributeInfo, IFilterProperty filter)
+        private void AddFilter(QueryAttributeInfo queryAttributeInfo, IFilterProperty filter)
         {
-            if (queryAttributeInfo == null)
-                return;
-
-            if (queryAttributeInfo.IsIgnored || queryAttributeInfo.PropertyInfo == null)
+            if (queryAttributeInfo.IsIgnored)
                 return;
 
             filter.SetOptions(queryAttributeInfo.PropertyInfo.Name, queryAttributeInfo.ModelPropertyName, queryAttributeInfo.CustomFiltering);
@@ -70,21 +68,23 @@ namespace Qurl
         {
             var propertyInfo = selector.GetPropertyInfo();
 
-            AddSort(propertyInfo.GetPropertyAttrInfo<TFilterModel>(), ascending);
+            if (propertyInfo.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
+            {
+                AddSort(queryAttributeInfo!, ascending);
+            }
+
         }
 
         public void AddSort(string propertyName, bool ascending)
         {
-            var queryAttributeInfo = propertyName.GetPropertyAttrInfo<TFilterModel>();
-
-            AddSort(queryAttributeInfo, ascending);
+            if (propertyName.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
+            {
+                AddSort(queryAttributeInfo!, ascending);
+            }
         }
 
-        private void AddSort(QueryAttributeInfo? queryAttributeInfo, bool ascending)
+        private void AddSort(QueryAttributeInfo queryAttributeInfo, bool ascending)
         {
-            if (queryAttributeInfo == null)
-                return;
-
             if (queryAttributeInfo.IsIgnored)
                 return;
 

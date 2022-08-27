@@ -4,10 +4,19 @@ namespace Qurl.Attributes
 {
     internal class QueryAttributeInfo
     {
-        public PropertyInfo? PropertyInfo { get; set; }
-        public bool IsIgnored { get; set; }
-        public string ModelPropertyName { get; set; } = string.Empty;
-        public bool CustomFiltering { get; set; }
-        public bool IsSortable { get; set; }
+        public QueryAttributeInfo(PropertyInfo propertyInfo, bool isIgnored, string modelPropertyName = "", bool customFiltering = false, bool isSortable = true)
+        {
+            PropertyInfo = propertyInfo;
+            IsIgnored = isIgnored;
+            ModelPropertyName = modelPropertyName;
+            CustomFiltering = customFiltering;
+            IsSortable = isSortable;
+        }
+
+        public PropertyInfo PropertyInfo { get; }
+        public bool IsIgnored { get; }
+        public string ModelPropertyName { get; }
+        public bool CustomFiltering { get; }
+        public bool IsSortable { get; } = true;
     }
 }

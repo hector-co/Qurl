@@ -35,7 +35,7 @@ namespace Qurl
                 if (propExp == null)
                     continue;
 
-                var keySelector = Expression.Lambda<Func<TModel, object>>(propExp, modelParameter);
+                var keySelector = Expression.Lambda<Func<TModel, object>>(Expression.Convert(propExp, typeof(object)), modelParameter);
 
                 if (sortProperty.Ascending)
                 {
