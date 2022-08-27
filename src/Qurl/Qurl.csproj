@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <Authors>hector.hco</Authors>
+    <Authors>Hector Carballo</Authors>
     <Company>$(Authors)</Company>
     <Description>QueryString</Description>
     <Copyright>Copyright © 2022 Hector Carballo</Copyright>
@@ -15,7 +15,7 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>beta</VersionSuffix>
+    <VersionSuffix>alpha-0001</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>

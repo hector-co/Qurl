@@ -8,9 +8,9 @@
     <PackageProjectUrl>https://github.com/hector-co/Qurl</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Authors>hector.hco</Authors>
+    <Authors>Hector Carballo</Authors>
     <VersionPrefix>1.0.0</VersionPrefix>
-    <VersionSuffix>beta</VersionSuffix>
+    <VersionSuffix>alpha-0001</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
