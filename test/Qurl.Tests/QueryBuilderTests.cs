@@ -426,33 +426,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 [] {string.Join(',', expectedIntValues)}; stringProperty1 [] {string.Join(',', expectedStringValues)}"
-            };
-
-            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
-
-            query.TryGetFilters(m => m.IntProperty1, out var intFilters).Should().BeTrue();
-
-            intFilters.Count().Should().Be(1);
-            intFilters.ElementAt(0).GetType().Should().Be(typeof(InFilter<int>));
-            ((InFilter<int>)intFilters.ElementAt(0)).Values.Should().BeEquivalentTo(expectedIntValues);
-
-            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
-
-            stringFilters.Count().Should().Be(1);
-            stringFilters.ElementAt(0).GetType().Should().Be(typeof(InFilter<string>));
-            ((InFilter<string>)stringFilters.ElementAt(0)).Values.Should().BeEquivalentTo(expectedStringValues);
-        }
-
-        [Fact]
-        public void DefaultInFilterTest()
-        {
-            var expectedIntValues = new[] { 3, 8, 15 };
-            var expectedStringValues = new[] { "abc", "d" };
-
-            var queryParams = new QueryParams
-            {
-                Filter = $"intProperty1 == {string.Join(',', expectedIntValues)}; stringProperty1 == {string.Join(',', expectedStringValues)}"
+                Filter = $"intProperty1 |= {string.Join(',', expectedIntValues)}; stringProperty1 |= {string.Join(',', expectedStringValues)}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
@@ -478,33 +452,7 @@ namespace Qurl.Tests
 
             var queryParams = new QueryParams
             {
-                Filter = $"intProperty1 ![] {string.Join(',', expectedIntValues)}; stringProperty1 ![] {string.Join(',', expectedStringValues)}"
-            };
-
-            var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);
-
-            query.TryGetFilters(m => m.IntProperty1, out var intFilters).Should().BeTrue();
-
-            intFilters.Count().Should().Be(1);
-            intFilters.ElementAt(0).GetType().Should().Be(typeof(NotInFilter<int>));
-            ((NotInFilter<int>)intFilters.ElementAt(0)).Values.Should().BeEquivalentTo(expectedIntValues);
-
-            query.TryGetFilters(m => m.StringProperty1, out var stringFilters).Should().BeTrue();
-
-            stringFilters.Count().Should().Be(1);
-            stringFilters.ElementAt(0).GetType().Should().Be(typeof(NotInFilter<string>));
-            ((NotInFilter<string>)stringFilters.ElementAt(0)).Values.Should().BeEquivalentTo(expectedStringValues);
-        }
-
-        [Fact]
-        public void DefaultNotInFilterTest()
-        {
-            var expectedIntValues = new[] { 3, 8, 15 };
-            var expectedStringValues = new[] { "abc", "d" };
-
-            var queryParams = new QueryParams
-            {
-                Filter = $"intProperty1 != {string.Join(',', expectedIntValues)}; stringProperty1 != {string.Join(',', expectedStringValues)}"
+                Filter = $"intProperty1 !|= {string.Join(',', expectedIntValues)}; stringProperty1 !|= {string.Join(',', expectedStringValues)}"
             };
 
             var query = _queryBuilder.CreateQuery<TestModel1>(queryParams);

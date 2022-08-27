@@ -24,8 +24,8 @@ namespace Qurl
         public const string EndsWithFilterOp = "_=";
         public const string CiEndsWithFilterOp = "_=*";
         public const string FromToFilterOp = "<->";
-        public const string InFilterOp = "[]";
-        public const string NotInFilterOp = "![]";
+        public const string InFilterOp = "|=";
+        public const string NotInFilterOp = "!|=";
 
         public const string ValidOperatorPattern = "^[^a-zA-Z0-9\\s\\;']+$";
 
@@ -69,11 +69,6 @@ namespace Qurl
 
             if (valueType != typeof(string) && StringOperators.Contains(@operator))
                 throw new QurlFormatException($"'{@operator}' only supports string type.");
-
-            if (@operator == EqualsFilterOp && values.Length > 1)
-                @operator = InFilterOp;
-            if (@operator == NotEqualsFilterOp && values.Length > 1)
-                @operator = NotInFilterOp;
 
             var filterType = _filterTypes[@operator];
             var completeFilterType = filterType.IsGenericType
