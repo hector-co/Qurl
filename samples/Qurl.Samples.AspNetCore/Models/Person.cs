@@ -1,6 +1,4 @@
-﻿using Qurl.Attributes;
-
-namespace Qurl.Samples.AspNetCore.Models
+﻿namespace Qurl.Samples.AspNetCore.Models
 {
     public class Person
     {
@@ -10,15 +8,5 @@ namespace Qurl.Samples.AspNetCore.Models
         public Group Group { get; set; } = new Group();
         public bool Active { get; set; }
         public DateTimeOffset CreationDate { get; set; }
-    }
-
-    public class PersonFilter
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public DateTime Birthday { get; set; }
-        [QueryOptions(ModelPropertyName = "Group.Id")]
-        public int GroupId { get; set; }
-        public bool Active { get; set; }
     }
 }
