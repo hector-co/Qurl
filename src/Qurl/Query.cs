@@ -43,39 +43,46 @@ namespace Qurl
             return filters.Count() > 0;
         }
 
-        private (PropertyInfo? propertyInfo, IEnumerable<QueryBaseAttribute> attributes) GetPropertyAttributesWithNameMapping(string propertyName)
+        private (PropertyInfo? propertyInfo, bool isIgnored, string modelPropertyName, bool customFiltering, bool isSortable) GetPropertyAndAttrValues(string propertyName)
         {
             foreach (var key in _filterModelAttrs.Keys)
             {
                 if (_filterModelAttrs[key]
                     .Any(a => a is QueryOptionsAttribute attr && attr.ParamsPropertyName.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    return (key, _filterModelAttrs[key]);
+                    return GetPropertyAndAttrValues(key);
                 }
             }
 
             PropertyInfo? propInfo = propertyName.GetPropertyInfo<TFilterModel>();
 
             if (propInfo == null)
-                return (null, Array.Empty<QueryBaseAttribute>());
+                return (null, default, string.Empty, default, default);
 
-            return (propInfo, _filterModelAttrs[propInfo]);
+            return GetPropertyAndAttrValues(propInfo);
+        }
+
+        private (PropertyInfo? propertyInfo, bool isIgnored, string modelPropertyName, bool customFiltering, bool isSortable) GetPropertyAndAttrValues(PropertyInfo propertyInfo)
+        {
+            var isIgnored = _filterModelAttrs[propertyInfo].Any(a => a is QueryIgnoreAttribute);
+
+            var optionsAttr = (QueryOptionsAttribute?)_filterModelAttrs[propertyInfo].FirstOrDefault(a => a is QueryOptionsAttribute);
+
+            return (propertyInfo, isIgnored, optionsAttr?.ModelPropertyName ?? string.Empty, optionsAttr?.CustomFiltering ?? false, optionsAttr?.IsSortable ?? true);
         }
 
         internal void AddFilter(string propertyName, Func<Type, IFilterProperty> filterFactory)
         {
-            var (property, attributes) = GetPropertyAttributesWithNameMapping(propertyName);
+            var (propertyInfo, isIgnored, modelPropertyName, customFiltering, _) = GetPropertyAndAttrValues(propertyName);
 
-            if (property == null)
+            if (propertyInfo == null)
                 return;
 
-            if (attributes.Any(a => a is QueryIgnoreAttribute))
+            if (isIgnored)
                 return;
 
-            var optionsAttribute = (QueryOptionsAttribute?)attributes.FirstOrDefault(a => a is QueryOptionsAttribute);
-
-            var filter = filterFactory(property.PropertyType);
-            filter.SetOptions(property.Name, optionsAttribute?.ModelPropertyName ?? string.Empty, optionsAttribute?.CustomFiltering ?? false);
+            var filter = filterFactory(propertyInfo.PropertyType);
+            filter.SetOptions(propertyInfo.Name, modelPropertyName, customFiltering);
 
             _filters.Add(filter);
         }
@@ -89,17 +96,15 @@ namespace Qurl
 
         public void AddFilter<TValue>(string propertyName, FilterPropertyBase<TValue> filter)
         {
-            var (property, attributes) = GetPropertyAttributesWithNameMapping(propertyName);
+            var (propertyInfo, isIgnored, modelPropertyName, customFiltering, _) = GetPropertyAndAttrValues(propertyName);
 
-            if (property == null)
+            if (propertyInfo == null)
                 return;
 
-            if (attributes.Any(a => a is QueryIgnoreAttribute))
+            if (isIgnored)
                 return;
 
-            var optionsAttribute = (QueryOptionsAttribute?)attributes.FirstOrDefault(a => a is QueryOptionsAttribute);
-
-            filter.SetOptions(property.Name, optionsAttribute?.ModelPropertyName ?? string.Empty, optionsAttribute?.CustomFiltering ?? false);
+            filter.SetOptions(propertyInfo.Name, modelPropertyName, customFiltering);
 
             _filters.Add(filter);
         }
@@ -113,23 +118,21 @@ namespace Qurl
 
         public void AddSort(string propertyName, bool ascending)
         {
-            var (property, attributes) = GetPropertyAttributesWithNameMapping(propertyName);
+            var (propertyInfo, isIgnored, modelPropertyName, _, isSortable) = GetPropertyAndAttrValues(propertyName);
 
-            if (property == null)
+            if (propertyInfo == null)
                 return;
 
-            if (attributes.Any(a => a is QueryIgnoreAttribute))
+            if (isIgnored)
                 return;
 
-            var optionsAttribute = (QueryOptionsAttribute?)attributes.FirstOrDefault(a => a is QueryOptionsAttribute);
-
-            if (optionsAttribute != null && !optionsAttribute.IsSortable)
+            if (!isSortable)
                 return;
 
             var sortValue = new SortValue
             {
-                PropertyName = property.Name,
-                ModelPropertyName = optionsAttribute?.ModelPropertyName ?? string.Empty,
+                PropertyName = propertyInfo.Name,
+                ModelPropertyName = modelPropertyName,
                 Ascending = ascending
             };
 
