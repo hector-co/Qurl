@@ -38,12 +38,7 @@ namespace Qurl
 
         public void AddFilter<TValue>(Expression<Func<TFilterModel, TValue>> selector, FilterPropertyBase<TValue> filter)
         {
-            var propertyInfo = selector.GetPropertyInfo();
-
-            if (propertyInfo.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
-            {
-                AddFilter(queryAttributeInfo!, filter);
-            }
+            AddFilter(selector.GetPropertyName(), (_) => filter);
         }
 
         internal void AddFilter(string propertyName, Func<Type, IFilterProperty> filterFactory)
@@ -66,13 +61,7 @@ namespace Qurl
 
         public void AddSort<TValue>(Expression<Func<TFilterModel, TValue>> selector, bool ascending)
         {
-            var propertyInfo = selector.GetPropertyInfo();
-
-            if (propertyInfo.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
-            {
-                AddSort(queryAttributeInfo!, ascending);
-            }
-
+            AddSort(selector.GetPropertyName(), ascending);
         }
 
         public void AddSort(string propertyName, bool ascending)

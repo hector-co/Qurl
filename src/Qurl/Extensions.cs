@@ -13,7 +13,7 @@ namespace Qurl
     {
         const char PropertyNamesSeparator = '.';
 
-        internal static ConcurrentDictionary<Type, PropertyInfo[]> Properties { get; set; } 
+        internal static ConcurrentDictionary<Type, PropertyInfo[]> Properties { get; set; }
             = new ConcurrentDictionary<Type, PropertyInfo[]>();
         internal static ConcurrentDictionary<Type, Dictionary<PropertyInfo, IEnumerable<QueryBaseAttribute>>> TypesAttributes
             = new ConcurrentDictionary<Type, Dictionary<PropertyInfo, IEnumerable<QueryBaseAttribute>>>();
@@ -169,6 +169,12 @@ namespace Qurl
         internal static PropertyInfo GetPropertyInfo<TModel, TValue>(this Expression<Func<TModel, TValue>> selector)
         {
             return (PropertyInfo)((MemberExpression)selector.Body).Member;
+        }
+
+        internal static string GetPropertyName<TModel, TValue>(this Expression<Func<TModel, TValue>> selector)
+        {
+            // TODO find a better way
+            return string.Join(PropertyNamesSeparator, selector.ToString().Split(PropertyNamesSeparator).Skip(1));
         }
 
         internal static object CreateInstance(this Type type)
