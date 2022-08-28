@@ -63,6 +63,20 @@ namespace Qurl.Tests
         }
 
         [Fact]
+        public void TestEqualsFilterStringProperty1()
+        {
+            const int prop1FilterValue = 3;
+            const int expectedCount = 1;
+
+            var query = new Query<SampleObjectWithRelationship>();
+            query.AddFilter(m => m.Prop1!.Prop1, new EqualsFilter<int>(prop1FilterValue));
+
+            var result = SampleObjectWithRelationshipsCollection.AsQueryable().ApplyQuery(query);
+            result.Count().Should().Be(expectedCount);
+            result.First().Prop1!.Prop1.Should().Be(prop1FilterValue);
+        }
+
+        [Fact]
         public void TestInFilterIntProperty()
         {
             var prop1FilterValues = new[] { 2, 4, 5, 8 };
