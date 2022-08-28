@@ -11,6 +11,8 @@ namespace Qurl
 {
     internal static class Extensions
     {
+        const char PropertyNamesSeparator = '.';
+
         internal static ConcurrentDictionary<Type, PropertyInfo[]> Properties { get; set; } 
             = new ConcurrentDictionary<Type, PropertyInfo[]>();
         internal static ConcurrentDictionary<Type, Dictionary<PropertyInfo, IEnumerable<QueryBaseAttribute>>> TypesAttributes
@@ -51,42 +53,9 @@ namespace Qurl
                 }
             }
 
-            if (propertyName.Contains('.'))
+            if (propertyName.Contains(PropertyNamesSeparator))
             {
-                Type parenType = typeof(TModel);
-                Type prevParentType = parenType;
-                PropertyInfo? childPropInfo = null;
-                QueryAttributeInfo? qai = null;
-                var modelPropertyName = "";
-                foreach (var member in propertyName.Split('.'))
-                {
-                    prevParentType = parenType;
-                    childPropInfo = parenType.GetCachedProperties()
-                        .FirstOrDefault(p => p.Name.Equals(member, StringComparison.InvariantCultureIgnoreCase));
-
-                    if (childPropInfo == null)
-                        return false;
-
-                    if (!childPropInfo.TryGetPropertyQueryInfo(parenType, out qai))
-                    {
-                        return false;
-                    }
-
-                    if (qai!.IsIgnored)
-                    {
-                        queryAttributeInfo = qai;
-                        return true;
-                    }
-
-                    modelPropertyName += qai!.ModelPropertyName + ".";
-                    parenType = childPropInfo.PropertyType;
-                }
-                parenType = prevParentType;
-                modelPropertyName = modelPropertyName.TrimEnd('.');
-
-                queryAttributeInfo = new QueryAttributeInfo(childPropInfo!, false, modelPropertyName, qai!.CustomFiltering, qai!.IsSortable);
-
-                return true;
+                return propertyName.TryGetSubPropertyQueryInfo<TModel>(out queryAttributeInfo);
             }
 
             var propertyInfo = propertyName.GetPropertyInfo<TModel>();
@@ -95,6 +64,46 @@ namespace Qurl
                 return false;
 
             return propertyInfo.TryGetPropertyQueryInfo<TModel>(out queryAttributeInfo);
+        }
+
+        internal static bool TryGetSubPropertyQueryInfo<TModel>(this string propertyName, out QueryAttributeInfo? queryAttributeInfo)
+        {
+            queryAttributeInfo = null;
+
+            Type parenType = typeof(TModel);
+            Type prevParentType = parenType;
+            PropertyInfo? childPropInfo = null;
+            QueryAttributeInfo? qai = null;
+            var modelPropertyName = "";
+            foreach (var member in propertyName.Split(PropertyNamesSeparator))
+            {
+                prevParentType = parenType;
+                childPropInfo = parenType.GetCachedProperties()
+                    .FirstOrDefault(p => p.Name.Equals(member, StringComparison.InvariantCultureIgnoreCase));
+
+                if (childPropInfo == null)
+                    return false;
+
+                if (!childPropInfo.TryGetPropertyQueryInfo(parenType, out qai))
+                {
+                    return false;
+                }
+
+                if (qai!.IsIgnored)
+                {
+                    queryAttributeInfo = qai;
+                    return true;
+                }
+
+                modelPropertyName += qai!.ModelPropertyName + PropertyNamesSeparator;
+                parenType = childPropInfo.PropertyType;
+            }
+            parenType = prevParentType;
+            modelPropertyName = modelPropertyName.TrimEnd(PropertyNamesSeparator);
+
+            queryAttributeInfo = new QueryAttributeInfo(childPropInfo!, false, modelPropertyName, qai!.CustomFiltering, qai!.IsSortable);
+
+            return true;
         }
 
         internal static bool TryGetPropertyQueryInfo<TModel>(this PropertyInfo propertyInfo, out QueryAttributeInfo? queryAttributeInfo)
