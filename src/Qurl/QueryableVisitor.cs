@@ -116,10 +116,10 @@ namespace Qurl
             _stack.Push(_filterFactory.Create(node.Operator, valueType).GetExpression(propExp, convertedValues));
         }
 
-        public Expression<Func<TModel, bool>> GetFilterExpression()
+        public Expression<Func<TModel, bool>>? GetFilterExpression()
         {
             if (_stack.Count == 0 || _stack.TryPop(out var last) && last == null)
-                return Expression.Lambda<Func<TModel, bool>>(Expression.Constant(true), _modelParameter);
+                return null;
 
             return Expression.Lambda<Func<TModel, bool>>(last, _modelParameter);
         }

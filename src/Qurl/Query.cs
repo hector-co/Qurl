@@ -6,20 +6,15 @@ using System.Linq.Expressions;
 
 namespace Qurl
 {
-    public class Query<TFilterModel> : Query<TFilterModel, TFilterModel>
-    {
-
-    }
-
     public class Query<TFilterModel, TModel>
     {
-        private Expression<Func<TModel, bool>> _filterExp;
+        private Expression<Func<TModel, bool>>? _filterExp;
         private readonly List<(Expression<Func<TModel, object>> sortExp, bool ascending)> _orderBy;
         private readonly List<ICustomFilter> _customFilters;
 
         public Query()
         {
-            _filterExp = (_) => true;
+            _filterExp = null;
             _orderBy = new List<(Expression<Func<TModel, object>>, bool)>();
             _customFilters = new List<ICustomFilter>();
         }
@@ -27,7 +22,7 @@ namespace Qurl
         public int Offset { get; set; }
         public int Limit { get; set; }
 
-        internal void SetFilterExpression(Expression<Func<TModel, bool>> filterExpression)
+        internal void SetFilterExpression(Expression<Func<TModel, bool>>? filterExpression)
         {
             _filterExp = filterExpression;
         }
@@ -57,7 +52,8 @@ namespace Qurl
 
         public IQueryable<TModel> ApplyTo(IQueryable<TModel> source, bool applyOrderingAndPaging = true)
         {
-            source = source.Where(_filterExp);
+            if (_filterExp != null)
+                source = source.Where(_filterExp);
 
             if (!applyOrderingAndPaging)
                 return source;

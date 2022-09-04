@@ -24,21 +24,26 @@ namespace Qurl
 
         public Query<TFilterModel, TModel> CreateQuery<TFilterModel, TModel>(QueryModel queryModel)
         {
-            if (!QueryParser.TryParse(queryModel.Filter, out var root))
-                throw new QurlFormatException();
+            var query = new Query<TFilterModel, TModel>
+            {
+                Offset = queryModel.Offset,
+                Limit = queryModel.Limit
+            };
 
-            var query = new Query<TFilterModel, TModel>();
+            if (!string.IsNullOrEmpty(queryModel.Filter))
+            {
+                if (!QueryParser.TryParse(queryModel.Filter, out var root))
+                    throw new QurlFormatException();
 
-            var visitor = new QueryableVisitor<TFilterModel, TModel>(_filterFactory, _queryHelper);
-            root!.Accept(visitor);
+                var visitor = new QueryableVisitor<TFilterModel, TModel>(_filterFactory, _queryHelper);
+                root!.Accept(visitor);
 
-            var filterExp = visitor.GetFilterExpression();
-            query.SetFilterExpression(filterExp);
-            query.SetCustomFilters(visitor.GetCustomFilters());
+                var filterExp = visitor.GetFilterExpression();
+                query.SetFilterExpression(filterExp);
+                query.SetCustomFilters(visitor.GetCustomFilters());
+            }
+
             query.SetOrderBy(GetOrderBy<TFilterModel, TModel>(queryModel.OrderBy));
-
-            query.Offset = queryModel.Offset;
-            query.Limit = queryModel.Limit;
 
             return query;
         }
