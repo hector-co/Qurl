@@ -1,93 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Qurl.Filters;
-using Qurl.Attributes;
 using System.Linq.Expressions;
-using Qurl.Exceptions;
 
 namespace Qurl
 {
-    public class Query<TFilterModel>
+    public class Query<TFilterModel> : Query<TFilterModel, TFilterModel>
     {
-        private readonly List<IFilterProperty> _filters;
-        private readonly List<SortValue> _orderBy;
+
+    }
+
+    public class Query<TFilterModel, TModel>
+    {
+        private Expression<Func<TModel, bool>> _filterExp;
+        private readonly List<(Expression<Func<TModel, object>> sortExp, bool ascending)> _orderBy;
+        private readonly List<IFilterProperty> _customFilters;
 
         public Query()
         {
-            _filters = new List<IFilterProperty>();
-            _orderBy = new List<SortValue>();
+            _filterExp = (_) => true;
+            _orderBy = new List<(Expression<Func<TModel, object>>, bool)>();
+            _customFilters = new List<IFilterProperty>();
         }
 
-        public IEnumerable<IFilter> Filters => _filters.AsReadOnly();
-        public IEnumerable<SortValue> OrderBy => _orderBy.AsReadOnly();
         public int Offset { get; set; }
         public int Limit { get; set; }
 
-        public bool TryGetFilters<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterPropertyBase<TValue>> filters)
+        internal void SetFilterExpression(Expression<Func<TModel, bool>> filterExpression)
+        {
+            _filterExp = filterExpression;
+        }
+
+        internal void SetOrderBy(List<(Expression<Func<TModel, object>>, bool)> orderBy)
+        {
+            _orderBy.Clear();
+            _orderBy.AddRange(orderBy);
+        }
+
+        internal void SetCustomFilters(List<IFilterProperty> cutomFilters)
+        {
+            _customFilters.Clear();
+            _customFilters.AddRange(cutomFilters);
+        }
+
+        public bool TryGetCustomFilter<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterProperty<TValue>> filters)
         {
             var propName = selector.GetPropertyInfo().Name;
 
-            filters = _filters
-                .Where(f => f.PropertyName.Equals(propName, StringComparison.InvariantCultureIgnoreCase))
-                .Cast<FilterPropertyBase<TValue>>();
+            filters = _customFilters
+                .Where(f => f.Name.Equals(propName, StringComparison.InvariantCultureIgnoreCase))
+                .Cast<FilterProperty<TValue>>();
 
             return filters.Count() > 0;
         }
 
-        public void AddFilter<TValue>(Expression<Func<TFilterModel, TValue>> selector, FilterPropertyBase<TValue> filter)
+        public IQueryable<TModel> ApplyTo(IQueryable<TModel> source, bool applyOrderingAndPaging = true)
         {
-            AddFilter(selector.GetPropertyName(), (_) => filter);
-        }
+            source = source.Where(_filterExp);
 
-        internal void AddFilter(string propertyName, Func<Type, IFilterProperty> filterFactory)
-        {
-            if (propertyName.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
+            if (!applyOrderingAndPaging)
+                return source;
+
+            var applyThenBy = false;
+            foreach (var (sortExp, ascending) in _orderBy)
             {
-                AddFilter(queryAttributeInfo!, filterFactory(queryAttributeInfo!.PropertyInfo.PropertyType));
+                source = ApplyOrder(source, sortExp, ascending, applyThenBy);
+                applyThenBy = true;
             }
+
+            if (Offset > 0)
+                source = source.Skip(Offset);
+            if (Limit > 0)
+                source = source.Take(Limit);
+
+            return source;
         }
 
-        private void AddFilter(QueryAttributeInfo queryAttributeInfo, IFilterProperty filter)
+        private static IQueryable<TModel> ApplyOrder(IQueryable<TModel> source, Expression<Func<TModel, object>> sortExp, bool ascendig, bool applyThenBy = true)
         {
-            if (queryAttributeInfo.IsIgnored)
-                return;
-
-            filter.SetOptions(queryAttributeInfo.PropertyInfo.Name, queryAttributeInfo.ModelPropertyName, queryAttributeInfo.CustomFiltering);
-
-            _filters.Add(filter);
-        }
-
-        public void AddSort<TValue>(Expression<Func<TFilterModel, TValue>> selector, bool ascending)
-        {
-            AddSort(selector.GetPropertyName(), ascending);
-        }
-
-        public void AddSort(string propertyName, bool ascending)
-        {
-            if (propertyName.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttributeInfo))
+            if (ascendig)
             {
-                AddSort(queryAttributeInfo!, ascending);
+                if (!applyThenBy)
+                {
+                    source = source.OrderBy(sortExp);
+                }
+                else
+                {
+                    source = ((IOrderedQueryable<TModel>)source).ThenBy(sortExp);
+                }
             }
-        }
-
-        private void AddSort(QueryAttributeInfo queryAttributeInfo, bool ascending)
-        {
-            if (queryAttributeInfo.IsIgnored)
-                return;
-
-            if (!queryAttributeInfo.IsSortable)
-                return;
-
-            var sortValue = new SortValue
+            else
             {
-                PropertyName = queryAttributeInfo.PropertyInfo!.Name,
-                ModelPropertyName = queryAttributeInfo.ModelPropertyName,
-                Ascending = ascending
-            };
+                if (!applyThenBy)
+                {
+                    source = source.OrderByDescending(sortExp);
+                }
+                else
+                {
+                    source = ((IOrderedQueryable<TModel>)source).ThenByDescending(sortExp);
+                }
+            }
 
-            _orderBy.Add(sortValue);
+            return source;
         }
     }
 }

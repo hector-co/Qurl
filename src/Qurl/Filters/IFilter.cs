@@ -1,9 +1,12 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
+using System;
 
 namespace Qurl.Filters
 {
     public interface IFilter
     {
-        Expression? GetFilterExpression<TModel>(ParameterExpression modelParameter);
+        string Operator { get; }
+        Expression GetExpression(Expression property, IEnumerable<object?> values, Type valueType);
     }
 }

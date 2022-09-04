@@ -26,7 +26,7 @@ namespace Qurl.Samples.AspNetCore.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery]QueryParams queryParams)
+        public IActionResult Get([FromQuery]QueryModel queryParams)
         {
             var query = _queryBuilder.CreateQuery<Group>(queryParams);
             var result = _context.Set<Group>().ApplyQuery(query).ToList();

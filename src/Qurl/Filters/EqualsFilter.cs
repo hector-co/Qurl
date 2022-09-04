@@ -1,21 +1,17 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Qurl.Filters
 {
-
-    public class EqualsFilter<TValue> : SingleFilterPropertyBase<TValue>
+    public class EqualsFilter : IFilter
     {
-        public EqualsFilter()
-        {
-        }
+        public string Operator => "==";
 
-        public EqualsFilter(TValue value) : base(value)
+        public Expression GetExpression(Expression property, IEnumerable<object?> values, Type valueType)
         {
-        }
-
-        protected override Expression GetExpression(Expression property)
-        {
-            return Expression.Equal(property, Expression.Constant(Value));
+            return Expression.Equal(property, Expression.Constant(values.ElementAt(0), valueType));
         }
     }
 }

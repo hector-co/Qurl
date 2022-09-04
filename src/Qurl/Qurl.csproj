@@ -29,4 +29,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Superpower" Version="3.0.0" />
+  </ItemGroup>
+
 </Project>

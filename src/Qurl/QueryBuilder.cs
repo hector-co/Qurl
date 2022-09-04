@@ -1,48 +1,72 @@
 ﻿using Qurl.Exceptions;
+using Qurl.Parser;
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Qurl
 {
     public class QueryBuilder
     {
-        private readonly FilterFactory _filterFactory;
+        private readonly FilterRegistry _filterRegistry;
+        private readonly QueryHelper _queryHelper;
 
-        public QueryBuilder(FilterFactory filterFactory)
+        public QueryBuilder(FilterRegistry filterRegistry, QueryHelper queryHelper)
         {
-            _filterFactory = filterFactory;
+            _filterRegistry = filterRegistry;
+            _queryHelper = queryHelper;
         }
 
-        public Query<TFilterModel> CreateQuery<TFilterModel>(QueryParams queryParams)
+        public Query<TFilterModel, TFilterModel> CreateQuery<TFilterModel>(QueryModel queryModel)
         {
-            return CreateQuery<Query<TFilterModel>, TFilterModel>(queryParams);
+            return CreateQuery<TFilterModel, TFilterModel>(queryModel);
         }
 
-        public TQuery CreateQuery<TQuery, TFilterModel>(QueryParams queryParams)
-            where TQuery : Query<TFilterModel>, new()
+        public Query<TFilterModel, TModel> CreateQuery<TFilterModel, TModel>(QueryModel queryModel)
         {
-            var query = new TQuery();
+            if (!QueryParser.TryParse(queryModel.Filter, out var root))
+                throw new QurlFormatException();
 
-            var filterTokens = QueryParamsTokenizer.GetFilterTokens(queryParams.Filter);
+            var query = new Query<TFilterModel, TModel>();
 
-            foreach (var (propName, @operator, values) in filterTokens)
-            {
-                if (!_filterFactory.Operators.Any(o => o.Equals(@operator, StringComparison.InvariantCultureIgnoreCase)))
-                    throw new QurlFormatException($"Operator not found: '{@operator}'");
+            var visitor = new QueryableVisitor<TFilterModel, TModel>(_filterRegistry, _queryHelper);
+            root!.Accept(visitor);
 
-                query.AddFilter(propName, (t) => _filterFactory.Create(@operator, t, values.ToArray()));
-            }
+            var filterExp = visitor.GetFilterExpression();
+            query.SetFilterExpression(filterExp);
+            query.SetCustomFilters(visitor.GetCustomFilters());
+            query.SetOrderBy(GetOrderBy<TFilterModel, TModel>(queryModel.OrderBy));
 
-            var orderingTokens = QueryParamsTokenizer.GetOrderingTokens(queryParams.OrderBy);
-            foreach (var (propName, ascending) in orderingTokens)
-            {
-                query.AddSort(propName, ascending);
-            }
-
-            query.Offset = queryParams.Offset;
-            query.Limit = query.Limit;
+            query.Offset = queryModel.Offset;
+            query.Limit = queryModel.Limit;
 
             return query;
+        }
+
+        private static List<(Expression<Func<TModel, object>> sortExt, bool ascending)> GetOrderBy<TFilterModel, TModel>(string orderBy)
+        {
+            var result = new List<(Expression<Func<TModel, object>> sortExt, bool ascending)>();
+            var orderingTokens = QueryParser.GetOrderingTokens(orderBy);
+            foreach (var (propName, ascending) in orderingTokens)
+            {
+                if (!propName.TryGetPropertyQueryInfo<TFilterModel>(out var queryAttrInfo))
+                    continue;
+
+                if (queryAttrInfo!.IsIgnored || !queryAttrInfo!.IsSortable)
+                    continue;
+
+                var modelParameter = Expression.Parameter(typeof(TModel), "m");
+                var propExp = queryAttrInfo.ModelPropertyName.GetPropertyExpression<TModel>(modelParameter);
+
+                if (propExp == null)
+                    continue;
+
+                var sortExp = Expression.Lambda<Func<TModel, object>>(Expression.Convert(propExp, typeof(object)), modelParameter);
+
+                result.Add((sortExp, ascending));
+            }
+
+            return result;
         }
     }
 }

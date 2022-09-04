@@ -1,4 +1,5 @@
 ﻿using Qurl.Attributes;
+using Qurl.Exceptions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -171,15 +172,24 @@ namespace Qurl
             return (PropertyInfo)((MemberExpression)selector.Body).Member;
         }
 
-        internal static string GetPropertyName<TModel, TValue>(this Expression<Func<TModel, TValue>> selector)
-        {
-            // TODO find a better way
-            return string.Join(PropertyNamesSeparator, selector.ToString().Split(PropertyNamesSeparator).Skip(1));
-        }
-
         internal static object CreateInstance(this Type type)
         {
             NewExpression constructorExpression = Expression.New(type);
+            Expression<Func<object>> lambdaExpression = Expression.Lambda<Func<object>>(constructorExpression);
+            Func<object> createObjFunc = lambdaExpression.Compile();
+            return createObjFunc();
+        }
+
+        internal static object CreateInstance(this Type type, params object[] arguments)
+        {
+            var ctorInfo = arguments.Length == 0
+                ? type.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, Type.EmptyTypes, null)
+                : type.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, arguments.Select(a => a.GetType()).ToArray(), null);
+
+            if (ctorInfo == null)
+                throw new QurlException();
+
+            NewExpression constructorExpression = Expression.New(ctorInfo, arguments.Select(a => Expression.Constant(a)));
             Expression<Func<object>> lambdaExpression = Expression.Lambda<Func<object>>(constructorExpression);
             Func<object> createObjFunc = lambdaExpression.Compile();
             return createObjFunc();
