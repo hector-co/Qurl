@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Qurl
+namespace Qurl.Filters
 {
-    public class FilterProperty<TValue> : IFilterProperty
+    public class CustomFilter<TValue> : ICustomFilter
     {
         private readonly List<TValue> _values;
 
-        public FilterProperty(string name, string @operator)
+        public CustomFilter(string name, string @operator)
         {
             _values = new List<TValue>();
             Name = name;
             Operator = @operator;
         }
+        public string Operator { get; internal set; } = string.Empty;
 
         public string Name { get; internal set; } = string.Empty;
-
-        public string Operator { get; internal set; } = string.Empty;
 
         public IEnumerable<TValue> Values => _values.AsReadOnly();
 

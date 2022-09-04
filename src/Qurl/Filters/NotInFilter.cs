@@ -4,13 +4,11 @@ using System.Linq.Expressions;
 
 namespace Qurl.Filters
 {
-    public class EqualsFilter<TValue> : IFilter
+    public class NotInFilter<TValue> : IFilter
     {
-        public string Operator => "==";
-
         public Expression GetExpression(Expression property, IEnumerable<object?> values)
         {
-            return Expression.Equal(property, Expression.Constant(values.ElementAt(0), typeof(TValue)));
+            return Expression.Not(Expression.Call(Expression.Constant(values.Cast<TValue>().ToList()), typeof(List<>).GetMethod("Contains"), property));
         }
     }
 }

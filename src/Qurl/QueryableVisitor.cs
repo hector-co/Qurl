@@ -1,4 +1,5 @@
 ﻿using Qurl.Exceptions;
+using Qurl.Filters;
 using Qurl.Parser.Nodes;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,18 @@ namespace Qurl
 {
     internal class QueryableVisitor<TFilterModel, TModel> : IQueryVisitor
     {
-        private readonly FilterRegistry _filterRegistry;
+        private readonly FilterFactory _filterFactory;
         private readonly QueryHelper _queryHelper;
         private readonly Stack<Expression?> _stack;
-        private readonly List<IFilterProperty> _customFilters;
+        private readonly List<ICustomFilter> _customFilters;
         private readonly ParameterExpression _modelParameter;
 
-        public QueryableVisitor(FilterRegistry filterRegistry, QueryHelper queryHelper)
+        public QueryableVisitor(FilterFactory filterFactory, QueryHelper queryHelper)
         {
-            _filterRegistry = filterRegistry;
+            _filterFactory = filterFactory;
             _queryHelper = queryHelper;
             _stack = new Stack<Expression?>();
-            _customFilters = new List<IFilterProperty>();
+            _customFilters = new List<ICustomFilter>();
             _modelParameter = Expression.Parameter(typeof(TModel), "m");
         }
 
@@ -95,8 +96,8 @@ namespace Qurl
 
             if (queryAttributeInfo.CustomFiltering)
             {
-                var type = typeof(FilterProperty<>).MakeGenericType(valueType);
-                var filter = (IFilterProperty)type.CreateInstance(queryAttributeInfo.PropertyInfo.Name, node.Operator);
+                var type = typeof(CustomFilter<>).MakeGenericType(valueType);
+                var filter = (ICustomFilter)type.CreateInstance(queryAttributeInfo.PropertyInfo.Name, node.Operator);
 
                 filter.SetValues(convertedValues);
                 _customFilters.Add(filter);
@@ -112,7 +113,7 @@ namespace Qurl
                 return;
             }
 
-            _stack.Push(_filterRegistry.GetFilter(node.Operator).GetExpression(propExp, convertedValues, valueType));
+            _stack.Push(_filterFactory.Create(node.Operator, valueType).GetExpression(propExp, convertedValues));
         }
 
         public Expression<Func<TModel, bool>> GetFilterExpression()
@@ -123,6 +124,6 @@ namespace Qurl
             return Expression.Lambda<Func<TModel, bool>>(last, _modelParameter);
         }
 
-        public List<IFilterProperty> GetCustomFilters() => _customFilters;
+        public List<ICustomFilter> GetCustomFilters() => _customFilters;
     }
 }

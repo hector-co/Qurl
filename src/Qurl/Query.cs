@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Qurl.Filters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,13 +15,13 @@ namespace Qurl
     {
         private Expression<Func<TModel, bool>> _filterExp;
         private readonly List<(Expression<Func<TModel, object>> sortExp, bool ascending)> _orderBy;
-        private readonly List<IFilterProperty> _customFilters;
+        private readonly List<ICustomFilter> _customFilters;
 
         public Query()
         {
             _filterExp = (_) => true;
             _orderBy = new List<(Expression<Func<TModel, object>>, bool)>();
-            _customFilters = new List<IFilterProperty>();
+            _customFilters = new List<ICustomFilter>();
         }
 
         public int Offset { get; set; }
@@ -37,19 +38,19 @@ namespace Qurl
             _orderBy.AddRange(orderBy);
         }
 
-        internal void SetCustomFilters(List<IFilterProperty> cutomFilters)
+        internal void SetCustomFilters(List<ICustomFilter> cutomFilters)
         {
             _customFilters.Clear();
             _customFilters.AddRange(cutomFilters);
         }
 
-        public bool TryGetCustomFilter<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<FilterProperty<TValue>> filters)
+        public bool TryGetCustomFilter<TValue>(Expression<Func<TFilterModel, TValue>> selector, out IEnumerable<CustomFilter<TValue>> filters)
         {
             var propName = selector.GetPropertyInfo().Name;
 
             filters = _customFilters
                 .Where(f => f.Name.Equals(propName, StringComparison.InvariantCultureIgnoreCase))
-                .Cast<FilterProperty<TValue>>();
+                .Cast<CustomFilter<TValue>>();
 
             return filters.Count() > 0;
         }

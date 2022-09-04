@@ -8,12 +8,12 @@ namespace Qurl
 {
     public class QueryBuilder
     {
-        private readonly FilterRegistry _filterRegistry;
+        private readonly FilterFactory _filterFactory;
         private readonly QueryHelper _queryHelper;
 
-        public QueryBuilder(FilterRegistry filterRegistry, QueryHelper queryHelper)
+        public QueryBuilder(FilterFactory filterFactory, QueryHelper queryHelper)
         {
-            _filterRegistry = filterRegistry;
+            _filterFactory = filterFactory;
             _queryHelper = queryHelper;
         }
 
@@ -29,7 +29,7 @@ namespace Qurl
 
             var query = new Query<TFilterModel, TModel>();
 
-            var visitor = new QueryableVisitor<TFilterModel, TModel>(_filterRegistry, _queryHelper);
+            var visitor = new QueryableVisitor<TFilterModel, TModel>(_filterFactory, _queryHelper);
             root!.Accept(visitor);
 
             var filterExp = visitor.GetFilterExpression();
